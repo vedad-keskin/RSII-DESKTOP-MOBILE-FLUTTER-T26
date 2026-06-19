@@ -36,13 +36,13 @@ builder.Services.AddDbContext<ECommerceDbContext>(options =>
     options.UseSqlServer(connectionString)
 );
 
-// register Mapster for object mapping
 builder.Services.AddMapster();
 
-// configure a few mappings explicitly if needed (optional)
-// Mapster will automatically map same-named properties, but configuration
-// ensures any custom rules or future needs can be added here.
+
+// register Mapster for object mapping — configure custom maps BEFORE AddMapster()
 TypeAdapterConfig<Product, ProductResponse>.NewConfig().IgnoreNullValues(true);
+
+
 TypeAdapterConfig<Category, CategoryResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<User, UserResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<UserUpdateRequest, User>.NewConfig().IgnoreNullValues(true);
@@ -55,6 +55,72 @@ TypeAdapterConfig<Order, OrderResponse>.NewConfig()
     .Map(dest => dest.Status, src => (int)src.Status);
 TypeAdapterConfig<OrderItem, OrderItemResponse>.NewConfig()
     .Map(dest => dest.ProductName, src => src.Product != null ? src.Product.Name : string.Empty);
+TypeAdapterConfig<Activity, ActivityResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<RewardRule, RewardRuleResponse>.NewConfig().IgnoreNullValues(true);
+
+
+
+//TypeAdapterConfig<UserActivity, UserActivityResponse>.NewConfig()
+//    .Map(dest => dest.UserFullName, src => $"{src.User.FirstName} {src.User.LastName}".Trim())
+//    .Map(dest => dest.ActivityName, src => src.Activity.Name)
+//    .Map(dest => dest.DueDate, src => src.Activity.DueDate)
+//    .Map(dest => dest.NumberOfPoints, src => src.Activity!.RewardRule!.NumberOfPoints)
+//;
+
+
+TypeAdapterConfig<UserActivity, UserActivityResponse>.NewConfig()
+    .MapWith(src => new UserActivityResponse
+    {
+        ActivityName = src.Activity.Name,
+        UserFullName = $"{src.User.FirstName} {src.User.LastName}".Trim(),
+        DueDate = src.Activity.DueDate,
+        NumberOfPoints = src.Activity.RewardRule.NumberOfPoints
+    }
+    )
+;
+
+
+
+
+
+
+
+
+
+
+//TypeAdapterConfig<UserActivity, UserActivityResponse>.NewConfig()
+//    .MapWith(src => new UserActivityResponse
+//    {
+//        Id = src.Id,
+//        Status = src.Status,
+//        UserFullName = src.User != null ? $"{src.User.FirstName} {src.User.LastName}".Trim() : string.Empty,
+//        ActivityName = src.Activity.Name,
+//        DueDate = src.Activity.DueDate,
+//        NumberOfPoints = src.Activity.RewardRule.NumberOfPoints,
+//    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//TypeAdapterConfig<UserActivity, UserActivityResponse>.NewConfig()
+//    .Map(dest => dest.UserFullName, src => src.User != null ? $"{src.User.FirstName} {src.User.LastName}".Trim() : string.Empty)
+//    .Map(dest => dest.ActivityName, src => src.Activity != null ? src.Activity.Name : string.Empty)
+//    .Map(dest => dest.DueDate, src => src.Activity != null ? src.Activity.DueDate : DateTime.MinValue)
+//    .Map(dest => dest.NumberOfPoints, src => src.Activity != null && src.Activity.RewardRule != null ? src.Activity.RewardRule.NumberOfPoints : 0);
 
 
 // register application services
@@ -87,6 +153,10 @@ builder.Services.AddScoped<IQueryOptimizationService, QueryOptimizationService> 
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductReviewService, ProductReviewService>();
 
+builder.Services.AddScoped<IActivityService, ActivityService>();
+builder.Services.AddScoped<IRewardRuleService, RewardRuleService>();
+builder.Services.AddScoped<IUserActivityService, UserActivityService>();
+
 builder.Services.AddScoped<IGenderService, GenderService>();
 
 builder.Services.AddScoped<IValidator<ProductTypeInsertRequest>, ProductTypeInsertValidator>();
@@ -101,6 +171,13 @@ builder.Services.AddScoped<IValidator<AssetInsertRequest>, AssetInsertValidator>
 builder.Services.AddScoped<IValidator<AssetUpdateRequest>, AssetUpdateValidator>();
 builder.Services.AddScoped<IValidator<ProductReviewInsertRequest>, ProductReviewInsertValidator>();
 builder.Services.AddScoped<IValidator<ProductReviewUpdateRequest>, ProductReviewUpdateValidator>();
+
+builder.Services.AddScoped<IValidator<ActivityInsertRequest>, ActivityInsertValidator>();
+builder.Services.AddScoped<IValidator<ActivityUpdateRequest>, ActivityUpdateValidator>();
+builder.Services.AddScoped<IValidator<RewardRuleInsertRequest>, RewardRuleInsertValidator>();
+builder.Services.AddScoped<IValidator<RewardRuleUpdateRequest>, RewardRuleUpdateValidator>();
+builder.Services.AddScoped<IValidator<UserActivityInsertRequest>, UserActivityInsertValidator>();
+builder.Services.AddScoped<IValidator<UserActivityUpdateRequest>, UserActivityUpdateValidator>();
 
 builder.Services.AddScoped<IValidator<GenderInsertRequest>, GenderInsertValidator>();
 builder.Services.AddScoped<IValidator<GenderUpdateRequest>, GenderUpdateValidator>();

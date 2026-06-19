@@ -25,6 +25,9 @@ namespace eCommerce.Services.Database
         public DbSet<Asset> Assets { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Gender> Genders { get; set; }
+        public DbSet<Activity> Activities { get; set; }
+        public DbSet<RewardRule> RewardRules { get; set; }
+        public DbSet<UserActivity> UserActivities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

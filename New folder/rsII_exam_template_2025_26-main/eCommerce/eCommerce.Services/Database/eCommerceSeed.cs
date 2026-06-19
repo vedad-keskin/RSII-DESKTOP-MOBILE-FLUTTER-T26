@@ -15,6 +15,9 @@ namespace eCommerce.Services.Database
             SeedRoles(modelBuilder);
             SeedUsers(modelBuilder);
             SeedUserRoles(modelBuilder);
+            SeedActivities(modelBuilder);
+            SeedRewardRules(modelBuilder);
+            SeedUserActivities(modelBuilder);
         }
 
         private void SeedProductTypes(ModelBuilder modelBuilder)
@@ -760,6 +763,93 @@ namespace eCommerce.Services.Database
                     UserId = 5,
                     RoleId = 2,
                     DateAssigned = new DateTime(2026, 3, 9, 0, 0, 0, DateTimeKind.Utc)
+                }
+            );
+        }
+
+        private void SeedActivities(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Activity>().HasData(
+                new
+                {
+                    Id = 1,
+                    Name = "Organizacija sastanka",
+                    Description = "",
+                    DueDate = new DateTime(2026, 6, 24, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new
+                {
+                    Id = 2,
+                    Name = "Izrada prezentacije",
+                    Description = "",
+                    DueDate = new DateTime(2026, 7, 4, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new
+                {
+                    Id = 3,
+                    Name = "Analiza projekta",
+                    Description = "",
+                    DueDate = new DateTime(2026, 7, 14, 0, 0, 0, DateTimeKind.Utc)
+                }
+            );
+        }
+
+        private void SeedRewardRules(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RewardRule>().HasData(
+                new
+                {
+                    Id = 1,
+                    ActivityId = 1,
+                    RewardTitle = "Organizacija sastanka - 10 points",
+                    NumberOfPoints = 10,
+                    MaxDaysToComplete = 5
+                },
+                new
+                {
+                    Id = 2,
+                    ActivityId = 2,
+                    RewardTitle = "Izrada prezentacije - 20 points",
+                    NumberOfPoints = 20,
+                    MaxDaysToComplete = 15
+                },
+                new
+                {
+                    Id = 3,
+                    ActivityId = 3,
+                    RewardTitle = "Analiza projekta - 30 points",
+                    NumberOfPoints = 30,
+                    MaxDaysToComplete = 25
+                }
+            );
+        }
+
+        private void SeedUserActivities(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserActivity>().HasData(
+                new
+                {
+                    Id = 1,
+                    UserId = 1,
+                    ActivityId = 1,
+                    DateAssigned = new DateTime(2026, 6, 19, 0, 0, 0, DateTimeKind.Utc),
+                    Status = "Completed",
+                    Note = "Random note",
+                    CompletedAt = (DateTime?)new DateTime(2026, 6, 21, 0, 0, 0, DateTimeKind.Utc),
+                    RewardTitle = "Organizacija sastanka - 10 points",
+                    RewardedAt = (DateTime?)new DateTime(2026, 6, 21, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new
+                {
+                    Id = 2,
+                    UserId = 2,
+                    ActivityId = 2,
+                    DateAssigned = new DateTime(2026, 6, 19, 0, 0, 0, DateTimeKind.Utc),
+                    Status = "Cancelled",
+                    Note = "Random note",
+                    CompletedAt = (DateTime?)null,
+                    RewardTitle = (string?)null,
+                    RewardedAt = (DateTime?)null
                 }
             );
         }

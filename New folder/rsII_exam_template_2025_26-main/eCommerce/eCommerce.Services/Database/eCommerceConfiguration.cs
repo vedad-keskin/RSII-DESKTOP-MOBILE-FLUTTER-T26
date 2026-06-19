@@ -51,6 +51,24 @@ namespace eCommerce.Services.Database
                 .HasForeignKey(pr => pr.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<RewardRule>()
+                .HasOne(rr => rr.Activity)
+                .WithOne(a => a.RewardRule)
+                .HasForeignKey<RewardRule>(rr => rr.ActivityId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserActivity>()
+                .HasOne(ua => ua.User)
+                .WithMany()
+                .HasForeignKey(ua => ua.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<UserActivity>()
+                .HasOne(ua => ua.Activity)
+                .WithMany()
+                .HasForeignKey(ua => ua.ActivityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Add any additional model configurations here
         }
     }
