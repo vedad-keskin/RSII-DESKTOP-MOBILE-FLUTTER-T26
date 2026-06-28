@@ -11,5 +11,9 @@ namespace eCommerce.Model.Requests
         public int ActivityId { get; set; }
 
         public string? Note { get; set; }
+
+        public DateTime DateAssigned { get; set; } = DateTime.Now;
+
+        public string Status { get; set; } = "Assigned";
     }
 }
