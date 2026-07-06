@@ -51,6 +51,12 @@ namespace eCommerce.Services.Database
                 .HasForeignKey(pr => pr.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<PaymentCardIB180079>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.PaymentCards)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Add any additional model configurations here
         }
     }

@@ -55,6 +55,7 @@ TypeAdapterConfig<Order, OrderResponse>.NewConfig()
     .Map(dest => dest.Status, src => (int)src.Status);
 TypeAdapterConfig<OrderItem, OrderItemResponse>.NewConfig()
     .Map(dest => dest.ProductName, src => src.Product != null ? src.Product.Name : string.Empty);
+TypeAdapterConfig<PaymentCardIB180079, PaymentCardIB180079Response>.NewConfig().IgnoreNullValues(true);
 
 
 // register application services
@@ -74,6 +75,7 @@ builder.Services.AddScoped<IUnitOfMeasureService, UnitOfMeasureService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IAssetService, AssetService>();
+builder.Services.AddScoped<IPaymentCardIB180079Service, PaymentCardIB180079Service>();
 
 
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
@@ -99,6 +101,8 @@ builder.Services.AddScoped<IValidator<AssetInsertRequest>, AssetInsertValidator>
 builder.Services.AddScoped<IValidator<AssetUpdateRequest>, AssetUpdateValidator>();
 builder.Services.AddScoped<IValidator<ProductReviewInsertRequest>, ProductReviewInsertValidator>();
 builder.Services.AddScoped<IValidator<ProductReviewUpdateRequest>, ProductReviewUpdateValidator>();
+builder.Services.AddScoped<IValidator<PaymentCardIB180079InsertRequest>, PaymentCardIB180079InsertValidator>();
+builder.Services.AddScoped<IValidator<PaymentCardIB180079UpdateRequest>, PaymentCardIB180079UpdateValidator>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

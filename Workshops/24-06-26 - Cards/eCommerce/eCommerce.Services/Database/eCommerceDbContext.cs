@@ -24,6 +24,7 @@ namespace eCommerce.Services.Database
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Asset> Assets { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<PaymentCardIB180079> PaymentCardsIB180079 { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

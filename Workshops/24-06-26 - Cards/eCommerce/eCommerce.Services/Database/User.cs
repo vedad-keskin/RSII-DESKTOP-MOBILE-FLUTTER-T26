@@ -46,5 +46,7 @@ namespace eCommerce.Services.Database
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+
+        public ICollection<PaymentCardIB180079> PaymentCards { get; set; } = new List<PaymentCardIB180079>();
     }
 } 
