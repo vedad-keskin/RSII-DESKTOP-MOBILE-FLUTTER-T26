@@ -3,6 +3,7 @@ import 'package:ecommerce_mobile/providers/auth_provider.dart';
 import 'package:ecommerce_mobile/providers/cart_provider.dart';
 import 'package:ecommerce_mobile/providers/category_provider.dart';
 import 'package:ecommerce_mobile/providers/order_provider.dart';
+import 'package:ecommerce_mobile/providers/payment_card_ib180079_provider.dart';
 import 'package:ecommerce_mobile/providers/product_provider.dart';
 import 'package:ecommerce_mobile/providers/product_review_provider.dart';
 import 'package:ecommerce_mobile/providers/user_provider.dart';
@@ -20,6 +21,7 @@ void main() {
         ChangeNotifierProvider(create: (_)=> UserProvider()),
         ChangeNotifierProvider(create: (_)=> OrderProvider()),
         ChangeNotifierProvider(create: (_)=> ProductReviewProvider()),
+        ChangeNotifierProvider(create: (_)=> PaymentCardIB180079Provider()),
       ],
       child: const MyApp()));
 }
@@ -60,8 +62,8 @@ class MyApp extends StatelessWidget {
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController(text: 'admin1');
+  final TextEditingController _passwordController = TextEditingController(text: 'Test123');
   
   @override
   Widget build(BuildContext context) {
