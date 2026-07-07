@@ -4,6 +4,7 @@ import 'package:ecommerce_mobile/models/payment_card_ib180079.dart';
 import 'package:ecommerce_mobile/models/search_result.dart';
 import 'package:ecommerce_mobile/providers/auth_provider.dart';
 import 'package:ecommerce_mobile/providers/payment_card_ib180079_provider.dart';
+import 'package:ecommerce_mobile/screens/payment_card_details.dart.dart';
 import 'package:ecommerce_mobile/utils/utils_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -60,6 +61,7 @@ class _PaymentCardListState extends State<PaymentCardList> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            _buildNewButton(),
             isLoading ? CircularProgressIndicator() : _buildTable()
           ],
         ),
@@ -82,16 +84,16 @@ class _PaymentCardListState extends State<PaymentCardList> {
                   rows: result?.items
                   ?.map(
                     (e) => DataRow(
-                      // onSelectChanged: (value) async {
-                      //   var refresh = await Navigator.of(context)
-                      //           .push(MaterialPageRoute(
-                      //         builder: (context) => ProductDetailsScreen(product: e),
-                      //       ));
+                      onSelectChanged: (value) async {
+                        var refresh = await Navigator.of(context)
+                                .push(MaterialPageRoute(
+                              builder: (context) => PaymentCardDetailsScreen(paymentCard: e),
+                            ));
                         
-                      //   if (refresh == "reload") {
-                      //     initTable();
-                      //   }
-                      // },
+                        if (refresh == "reload") {
+                          initTable();
+                        }
+                      },
                       cells: [
                       DataCell(Text(e.cardNumber ?? 'N/A')),
                       DataCell(Text(e.cvc ?? 'N/A')),
@@ -105,6 +107,31 @@ class _PaymentCardListState extends State<PaymentCardList> {
             ),
           ));
   }
+
+
+ Padding _buildNewButton() {
+    return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+       
+              ElevatedButton(onPressed: () async {
+                var refresh = await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const PaymentCardDetailsScreen(
+                      paymentCard: null,
+                    )
+                  )
+                );
+
+                if( refresh == "reload"){
+                  initTable();
+                }
+              }, child: Text("Dodaj karticu")),
+            ],
+          ),
+        );
+ }
 
 
   

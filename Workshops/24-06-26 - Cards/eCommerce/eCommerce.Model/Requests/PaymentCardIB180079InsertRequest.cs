@@ -11,7 +11,7 @@ namespace eCommerce.Model.Requests
         public int UserId { get; set; }
         public string CardNumber { get; set; } = string.Empty;
         public string CVC { get; set; } = string.Empty;
-        public DateTime ExiprationDate { get; set; }
+        public DateTime ExiprationDate { get; set; } = DateTime.Now.AddDays(3);
         public decimal InitialBalance { get; set; }
     }
 }
