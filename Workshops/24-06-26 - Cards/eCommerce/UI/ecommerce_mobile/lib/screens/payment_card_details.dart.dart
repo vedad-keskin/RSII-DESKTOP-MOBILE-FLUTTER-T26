@@ -91,47 +91,45 @@ class _PaymentCardDetailsScreenState extends State<PaymentCardDetailsScreen> {
 
 
  Widget _buildOrders(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Your orders'),
-        centerTitle: true,
-      ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : _orders == null || _orders!.isEmpty
-                ? ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    children: const [
-                      SizedBox(height: 120),
-                      Center(child: Text('No orders yet')),
-                    ],
-                  )
-                : ListView.builder(
-                    itemCount: _orders!.length,
-                    itemBuilder: (context, index) {
-                      final o = _orders![index];
-                      return ListTile(
-                        title: Text(o.orderNumber),
-                        subtitle: Text(
-                          '${o.orderDate.toLocal().toString().split('.').first} · ${o.orderItems.length} item(s)',
-                        ),
-                        trailing: Text('\$${o.totalAmount.toStringAsFixed(2)}'),
-                        // onTap: () async {
-                        //   await Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //       builder: (context) =>
-                        //           OrderDetailScreen(orderId: o.id),
-                        //     ),
-                        //   );
-                          // _load();
-                        // },
-                      );
-                    },
-                  ),
-      ),
+    return
+    Expanded(
+      child:
+     RefreshIndicator(
+      onRefresh: _load,
+      child: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _orders == null || _orders!.isEmpty
+              ? ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: const [
+                    SizedBox(height: 120),
+                    Center(child: Text('No orders yet')),
+                  ],
+                )
+              : ListView.builder(
+                  itemCount: _orders!.length,
+                  itemBuilder: (context, index) {
+                    final o = _orders![index];
+                    return ListTile(
+                      title: Text(o.orderNumber),
+                      subtitle: Text(
+                        '${o.orderDate.toLocal().toString().split('.').first} · ${o.orderItems.length} item(s)',
+                      ),
+                      trailing: Text('\$${o.totalAmount.toStringAsFixed(2)}'),
+                      // onTap: () async {
+                      //   await Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //       builder: (context) =>
+                      //           OrderDetailScreen(orderId: o.id),
+                      //     ),
+                      //   );
+                        // _load();
+                      // },
+                    );
+                  },
+                ),
+     ),
     );
   }
 
