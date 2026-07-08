@@ -141,6 +141,46 @@ public class OrderService : BaseReadService<Order, OrderResponse, OrderSearchObj
             }
 
             order.TotalAmount = total;
+
+            // ispitna logika
+
+            var card = await _dbContext.PaymentCardIB180079
+                .FirstOrDefaultAsync(x => x.Id == request.PaymentCardId && x.UserId == userId);
+
+            if(card == null)
+            {
+
+                throw new ClinetException($"Payment card not found or doesn't belong to the user.");
+
+            }
+
+            if(card.ExiprationDate < DateTime.Today)
+            {
+
+                throw new ClinetException($"Card has expired.");
+
+            }
+
+            var BalanceSpent = await _dbContext.Orders
+                .Where(x => x.PaymentCardId == card.Id
+                //&& x.Status != OrderStatus.Cancelled
+                //&& x.Status != OrderStatus.Returned
+                )
+                .SumAsync(x => x.TotalAmount);
+
+
+            var AvailableBalance = card.InitialBalance - BalanceSpent; // 10.000 - 5000
+
+            if(total > AvailableBalance)
+            {
+                throw new ClinetException($"Insufficent funds on card.");
+
+            }
+
+            order.PaymentCardId = card.Id;
+            order.PaymentDate = DateTime.Now;
+
+
             _dbContext.Orders.Add(order);
             await _dbContext.SaveChangesAsync();
             await tx.CommitAsync();

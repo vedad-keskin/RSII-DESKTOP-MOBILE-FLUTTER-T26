@@ -8,5 +8,7 @@ public class OrderResponse
     public int Status { get; set; }
     public decimal TotalAmount { get; set; }
     public int UserId { get; set; }
+    public int? PaymentCardId { get; set; }
+
     public List<OrderItemResponse> OrderItems { get; set; } = new();
 }

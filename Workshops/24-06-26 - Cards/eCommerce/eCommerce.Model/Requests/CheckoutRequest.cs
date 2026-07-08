@@ -9,4 +9,6 @@ public class CheckoutRequest
     public string? ShippingState { get; set; }
     public string? ShippingZipCode { get; set; }
     public string? ShippingCountry { get; set; }
+    public int? PaymentCardId { get; set; }
+
 }
