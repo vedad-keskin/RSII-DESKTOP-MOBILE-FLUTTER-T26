@@ -1,16 +1,13 @@
-import 'dart:convert';
-import 'dart:ui';
 import 'package:ecommerce_mobile/layouts/master_screen.dart';
+import 'package:ecommerce_mobile/models/order.dart';
 import 'package:ecommerce_mobile/models/payment_card_ib180079.dart';
 import 'package:ecommerce_mobile/providers/auth_provider.dart';
+import 'package:ecommerce_mobile/providers/order_provider.dart';
 import 'package:ecommerce_mobile/providers/payment_card_ib180079_provider.dart';
 import 'package:ecommerce_mobile/utils/utils_widgets.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
-
-import '../models/asset.dart';
 
 class PaymentCardDetailsScreen extends StatefulWidget {
   final PaymentCardIB180079? paymentCard;
@@ -27,10 +24,13 @@ class _PaymentCardDetailsScreenState extends State<PaymentCardDetailsScreen> {
   Map<String, dynamic> _initalValue = {};
 
   late PaymentCardIB180079Provider _paymentCardProvider;
+  late OrderProvider _orderProvider;
+
+  List<Order> _transactions = [];
+  bool _transactionsLoading = false;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     _initalValue = {
@@ -41,6 +41,29 @@ class _PaymentCardDetailsScreenState extends State<PaymentCardDetailsScreen> {
     };
 
     _paymentCardProvider = context.read<PaymentCardIB180079Provider>();
+    _orderProvider = context.read<OrderProvider>();
+
+    if (widget.paymentCard != null) {
+      _loadTransactions();
+    }
+  }
+
+  Future<void> _loadTransactions() async {
+    setState(() => _transactionsLoading = true);
+    try {
+      final orders = await _orderProvider.fetchMyOrders();
+      setState(() {
+        _transactions = orders
+            .where((o) => o.paymentCardId == widget.paymentCard!.id)
+            .toList();
+        _transactionsLoading = false;
+      });
+    } on Exception catch (e) {
+      if (mounted) {
+        alertBox(context, 'Error', e.toString());
+      }
+      setState(() => _transactionsLoading = false);
+    }
   }
 
   @override
@@ -52,7 +75,21 @@ class _PaymentCardDetailsScreenState extends State<PaymentCardDetailsScreen> {
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(children: [_buildForm(), _saveButton(context)]),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildForm(),
+                if (widget.paymentCard != null) ...[
+                  const SizedBox(height: 20),
+                  Text('Transakcije', style: TextStyle(fontSize: 18)),
+                  _transactionsLoading
+                      ? CircularProgressIndicator()
+                      : _buildTransactionsTable(),
+                ],
+                _saveButton(context),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -221,6 +258,36 @@ class _PaymentCardDetailsScreenState extends State<PaymentCardDetailsScreen> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTransactionsTable() {
+    if (_transactions.isEmpty) {
+      return Text('Nema transakcija');
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: DataTable(
+        columns: [
+          DataColumn(label: Text('Datum')),
+          DataColumn(label: Text('Iznos')),
+        ],
+        rows: _transactions
+            .map(
+              (o) => DataRow(
+                cells: [
+                  DataCell(
+                    Text(
+                      '${o.orderDate.day}.${o.orderDate.month}.${o.orderDate.year}',
+                    ),
+                  ),
+                  DataCell(Text('${o.totalAmount} KM')),
+                ],
+              ),
+            )
+            .toList(),
       ),
     );
   }
