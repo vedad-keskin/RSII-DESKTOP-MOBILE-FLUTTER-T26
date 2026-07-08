@@ -1,10 +1,14 @@
+import 'package:ecommerce_mobile/models/payment_card_ib180079.dart';
+import 'package:ecommerce_mobile/models/search_result.dart';
 import 'package:ecommerce_mobile/providers/auth_provider.dart';
 import 'package:ecommerce_mobile/providers/cart_provider.dart';
 import 'package:ecommerce_mobile/providers/order_provider.dart';
+import 'package:ecommerce_mobile/providers/payment_card_ib180079_provider.dart';
 import 'package:ecommerce_mobile/screens/order_detail_screen.dart';
 import 'package:ecommerce_mobile/utils/api_client_exception.dart';
 import 'package:ecommerce_mobile/utils/utils_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
 
 class CartListScreen extends StatefulWidget {
@@ -18,13 +22,42 @@ class CartListScreen extends StatefulWidget {
 
 class _CartListScreenState extends State<CartListScreen> {
   late CartProvider _cartProvider;
+  late PaymentCardIB180079Provider _paymentCardProvider;
+
   bool _checkoutBusy = false;
+
+  SearchResult<PaymentCardIB180079>? _cardResult;
+  int? _selectedPaymentCardId;
 
   @override
   void initState() {
     super.initState();
     _cartProvider = context.read<CartProvider>();
+    _paymentCardProvider = context.read<PaymentCardIB180079Provider>();
+
+        initForm();
   }
+
+
+ Future initForm() async {
+    try {
+      var paymentCards = await _paymentCardProvider.get(filter: {
+
+             'userId': int.tryParse(AuthProvider.accessTokenDecoded?['Id'] ?? '0') ?? 0,
+      });
+
+
+      setState(() {
+        _cardResult = paymentCards;
+  
+      });
+    } on Exception catch (e) {
+      alertBox(context, "Error", e.toString());
+    }
+  }
+
+
+
 
   double _subtotal(CartProvider cart) {
     return cart.cart.items.fold<double>(
@@ -38,6 +71,11 @@ class _CartListScreenState extends State<CartListScreen> {
     if (AuthProvider.accesstoken == null ||
         AuthProvider.accesstoken!.isEmpty) {
       alertBox(context, 'Login required', 'Please log in to place an order.');
+      return;
+    }
+
+      if (_selectedPaymentCardId == null) {
+      alertBox(context, 'Payment Card required', 'Please select a payment card.');
       return;
     }
 
@@ -63,7 +101,9 @@ class _CartListScreenState extends State<CartListScreen> {
             },
           )
           .toList();
-      final order = await context.read<OrderProvider>().checkout(payload);
+
+
+      final order = await context.read<OrderProvider>().checkout(payload, _selectedPaymentCardId!);
 
       _cartProvider.clearCart();
 
@@ -113,9 +153,47 @@ class _CartListScreenState extends State<CartListScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+
+   FormBuilderDropdown(
+                  name: "paymentCardId",
+                  decoration: InputDecoration(labelText: "Payment Card"),
+                  items:
+                      _cardResult?.items
+                          ?.map(
+                            (e) => DropdownMenuItem(
+                              value: e.id,
+                              child: Text(e.cardNumber!),
+                            ),
+                          )
+                          .toList() ??
+                      [],
+                      onChanged: (value) {
+                      
+                      setState(() {
+                        _selectedPaymentCardId = value as int? ;
+                      });
+                      
+                      }
+                ),
+       
+
+              const SizedBox(height: 20),
+
+
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+
+
+
+
+          
+
+
+
+
+
               const Text('Estimated total', style: TextStyle(fontSize: 16)),
               Text(
                 '\$${total.toStringAsFixed(2)}',
@@ -127,6 +205,12 @@ class _CartListScreenState extends State<CartListScreen> {
             ],
           ),
           const SizedBox(height: 12),
+
+
+  
+   
+
+
           SizedBox(
             height: 48,
             child: FilledButton(
