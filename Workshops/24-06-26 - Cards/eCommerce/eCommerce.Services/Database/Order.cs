@@ -28,7 +28,19 @@ namespace eCommerce.Services.Database
         
         [ForeignKey("UserId")]
         public User User { get; set; } = null!;
-        
+
+
+
+        // Customer who placed the order
+        public int? PaymentCardId { get; set; }
+
+        [ForeignKey("PaymentCardId")]
+        public PaymentCardIB180079? PaymentCard { get; set; } = null!;
+
+
+
+
+
         // Navigation property for OrderItems
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 

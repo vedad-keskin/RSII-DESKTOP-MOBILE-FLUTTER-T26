@@ -1,4 +1,8 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace eCommerce.Model.Requests
 {
@@ -7,8 +11,8 @@ namespace eCommerce.Model.Requests
         public int Id { get; set; }
         public int UserId { get; set; }
         public string CardNumber { get; set; } = string.Empty;
-        public string Cvc { get; set; } = string.Empty;
-        public DateTime ExpirationDate { get; set; }
+        public string CVC { get; set; } = string.Empty;
+        public DateTime ExiprationDate { get; set; } = DateTime.Now.AddDays(3);
         public decimal InitialBalance { get; set; }
     }
 }

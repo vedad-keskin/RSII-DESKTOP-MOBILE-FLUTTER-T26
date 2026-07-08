@@ -8,11 +8,14 @@ namespace eCommerce.Services.Database
     {
         [Key]
         public int Id { get; set; }
-
+        
+        // Foreign key for User
         public int UserId { get; set; }
-
+        
+        // Navigation property for Product
         [ForeignKey("UserId")]
         public User User { get; set; } = null!;
+
 
         [Required]
         [MaxLength(12)]
@@ -20,14 +23,13 @@ namespace eCommerce.Services.Database
 
         [Required]
         [MaxLength(3)]
-        public string Cvc { get; set; } = string.Empty;
+        public string CVC { get; set; } = string.Empty;
 
-        public DateTime ExpirationDate { get; set; }
+        public DateTime ExiprationDate { get; set; } 
 
         public decimal InitialBalance { get; set; }
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime? UpdatedAt { get; set; }
+        
+        
+        
     }
-}
+} 

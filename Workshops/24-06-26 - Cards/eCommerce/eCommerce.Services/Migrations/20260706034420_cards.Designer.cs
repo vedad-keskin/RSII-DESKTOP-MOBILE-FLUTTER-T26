@@ -12,7 +12,7 @@ using eCommerce.Services.Database;
 namespace eCommerce.Services.Migrations
 {
     [DbContext(typeof(ECommerceDbContext))]
-    [Migration("20260706013953_cards")]
+    [Migration("20260706034420_cards")]
     partial class cards
     {
         /// <inheritdoc />
@@ -299,27 +299,21 @@ namespace eCommerce.Services.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CVC")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
                     b.Property<string>("CardNumber")
                         .IsRequired()
                         .HasMaxLength(12)
                         .HasColumnType("nvarchar(12)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Cvc")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
-                    b.Property<DateTime>("ExpirationDate")
+                    b.Property<DateTime>("ExiprationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("InitialBalance")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -328,7 +322,7 @@ namespace eCommerce.Services.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PaymentCardsIB180079");
+                    b.ToTable("PaymentCardIB180079");
                 });
 
             modelBuilder.Entity("eCommerce.Services.Database.Product", b =>
@@ -1316,7 +1310,7 @@ namespace eCommerce.Services.Migrations
             modelBuilder.Entity("eCommerce.Services.Database.PaymentCardIB180079", b =>
                 {
                     b.HasOne("eCommerce.Services.Database.User", "User")
-                        .WithMany("PaymentCards")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1463,8 +1457,6 @@ namespace eCommerce.Services.Migrations
 
             modelBuilder.Entity("eCommerce.Services.Database.User", b =>
                 {
-                    b.Navigation("PaymentCards");
-
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("UserRoles");

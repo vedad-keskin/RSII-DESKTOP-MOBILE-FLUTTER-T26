@@ -17,7 +17,7 @@ class AuthProvider extends ChangeNotifier {
   String _baseUrl = "";
 
   AuthProvider() {
-    _baseUrl = const String.fromEnvironment("BASE_URL", defaultValue: "http://10.0.2.2:5126/Access");
+    _baseUrl = const String.fromEnvironment("BASE_URL", defaultValue: "http://localhost:5126/Access");
   }
 
 

@@ -12,24 +12,22 @@ namespace eCommerce.Services.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "PaymentCardsIB180079",
+                name: "PaymentCardIB180079",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     CardNumber = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
-                    Cvc = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
-                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    InitialBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CVC = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
+                    ExiprationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    InitialBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PaymentCardsIB180079", x => x.Id);
+                    table.PrimaryKey("PK_PaymentCardIB180079", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PaymentCardsIB180079_Users_UserId",
+                        name: "FK_PaymentCardIB180079_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -37,8 +35,8 @@ namespace eCommerce.Services.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_PaymentCardsIB180079_UserId",
-                table: "PaymentCardsIB180079",
+                name: "IX_PaymentCardIB180079_UserId",
+                table: "PaymentCardIB180079",
                 column: "UserId");
         }
 
@@ -46,7 +44,7 @@ namespace eCommerce.Services.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "PaymentCardsIB180079");
+                name: "PaymentCardIB180079");
         }
     }
 }
