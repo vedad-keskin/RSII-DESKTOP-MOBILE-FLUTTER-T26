@@ -13,6 +13,7 @@ Order _$OrderFromJson(Map<String, dynamic> json) => Order(
   status: (json['status'] as num).toInt(),
   totalAmount: (json['totalAmount'] as num).toDouble(),
   userId: (json['userId'] as num).toInt(),
+  paymentCardId: (json['paymentCardId'] as num).toInt(),
   orderItems:
       (json['orderItems'] as List<dynamic>?)
           ?.map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
@@ -27,5 +28,6 @@ Map<String, dynamic> _$OrderToJson(Order instance) => <String, dynamic>{
   'status': instance.status,
   'totalAmount': instance.totalAmount,
   'userId': instance.userId,
+  'paymentCardId': instance.paymentCardId,
   'orderItems': instance.orderItems,
 };

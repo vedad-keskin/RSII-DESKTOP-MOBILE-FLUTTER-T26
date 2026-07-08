@@ -12,6 +12,7 @@ class Order {
   final int status;
   final double totalAmount;
   final int userId;
+  final int paymentCardId;
   final List<OrderItem> orderItems;
 
   Order({
@@ -21,6 +22,7 @@ class Order {
     required this.status,
     required this.totalAmount,
     required this.userId,
+    required this.paymentCardId,
     this.orderItems = const [],
   });
 
