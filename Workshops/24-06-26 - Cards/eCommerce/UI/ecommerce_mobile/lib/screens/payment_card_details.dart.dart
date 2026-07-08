@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'package:ecommerce_mobile/layouts/master_screen.dart';
+import 'package:ecommerce_mobile/models/order.dart';
 import 'package:ecommerce_mobile/models/payment_card_ib180079.dart';
 import 'package:ecommerce_mobile/providers/auth_provider.dart';
+import 'package:ecommerce_mobile/providers/order_provider.dart';
 import 'package:ecommerce_mobile/providers/payment_card_ib180079_provider.dart';
 import 'package:ecommerce_mobile/utils/utils_widgets.dart';
 import 'package:file_picker/file_picker.dart';
@@ -28,6 +30,9 @@ class _PaymentCardDetailsScreenState extends State<PaymentCardDetailsScreen> {
 
   late PaymentCardIB180079Provider _paymentCardProvider;
 
+  List<Order>? _orders;
+  bool _loading = true;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -41,7 +46,26 @@ class _PaymentCardDetailsScreenState extends State<PaymentCardDetailsScreen> {
     };
 
     _paymentCardProvider = context.read<PaymentCardIB180079Provider>();
+
+        _load();
   }
+
+  Future<void> _load() async {
+    setState(() => _loading = true);
+    try {
+      final list = await context.read<OrderProvider>().fetchMyOrders();
+      setState(() {
+        _orders = list.where((x) => x.paymentCardId == widget.paymentCard?.id).toList();
+        _loading = false;
+      });
+    } on Exception catch (e) {
+      setState(() => _loading = false);
+      if (mounted) {
+        alertBox(context, 'Error', e.toString());
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +76,64 @@ class _PaymentCardDetailsScreenState extends State<PaymentCardDetailsScreen> {
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(children: [_buildForm(), _saveButton(context)]),
+          child: Column(children: [
+            _buildForm(),
+            _buildOrdersList(context),
+            _saveButton(context)
+             
+             ]),
         ),
       ),
     );
   }
+
+  Widget _buildOrdersList(BuildContext context) {
+    return Expanded(
+                child:
+       RefreshIndicator(
+        onRefresh: _load,
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _orders == null || _orders!.isEmpty
+                ? ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: const [
+                      SizedBox(height: 120),
+                      Center(child: Text('No orders yet')),
+                    ],
+                  )
+                : ListView.builder(
+                    itemCount: _orders!.length,
+                    itemBuilder: (context, index) {
+                      final o = _orders![index];
+                      return ListTile(
+                        title: Text(o.orderNumber),
+                        subtitle: Text(
+                          '${o.orderDate.toLocal().toString().split('.').first} · ${o.orderItems.length} item(s)',
+                        ),
+                        trailing: Text('\$${o.totalAmount.toStringAsFixed(2)}'),
+                        // onTap: () async {
+                        //   await Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder: (context) =>
+                        //           OrderDetailScreen(orderId: o.id),
+                        //     ),
+                        //   );
+                        //   _load();
+                        // },
+                      );
+                    },
+                  ),
+       ),
+    );
+    
+  }
+
+
+
+
+
 
   Padding _saveButton(BuildContext context) {
     return Padding(
