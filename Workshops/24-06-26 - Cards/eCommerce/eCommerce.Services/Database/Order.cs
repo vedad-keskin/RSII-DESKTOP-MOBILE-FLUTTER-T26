@@ -56,6 +56,11 @@ namespace eCommerce.Services.Database
         
         public DateTime? PaymentDate { get; set; }
         
+        public int? PaymentCardIB180079Id { get; set; }
+
+        [ForeignKey("PaymentCardIB180079Id")]
+        public PaymentCardIB180079? PaymentCard { get; set; }
+        
         public string? Notes { get; set; }
     }
     

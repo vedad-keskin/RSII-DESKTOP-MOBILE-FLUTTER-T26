@@ -10,10 +10,16 @@ class OrderProvider extends BaseProvider<Order> {
   @override
   Order fromJson(data) => Order.fromJson(data as Map<String, dynamic>);
 
-  Future<Order> checkout(List<Map<String, dynamic>> items) async {
+  Future<Order> checkout(
+    List<Map<String, dynamic>> items,
+    int paymentCardId,
+  ) async {
     final uri = Uri.parse('${BaseProvider.baseUrl}Orders/Checkout');
     final headers = createHeaders();
-    final body = jsonEncode({'items': items});
+    final body = jsonEncode({
+      'items': items,
+      'paymentCardId': paymentCardId,
+    });
     final response = await http.post(uri, headers: headers, body: body);
     validateResponse(response);
     return Order.fromJson(jsonDecode(response.body) as Map<String, dynamic>);

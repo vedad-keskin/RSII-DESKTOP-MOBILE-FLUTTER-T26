@@ -1,6 +1,9 @@
+import 'package:ecommerce_mobile/models/payment_card_ib180079.dart';
+import 'package:ecommerce_mobile/models/search_result.dart';
 import 'package:ecommerce_mobile/providers/auth_provider.dart';
 import 'package:ecommerce_mobile/providers/cart_provider.dart';
 import 'package:ecommerce_mobile/providers/order_provider.dart';
+import 'package:ecommerce_mobile/providers/payment_card_ib180079_provider.dart';
 import 'package:ecommerce_mobile/screens/order_detail_screen.dart';
 import 'package:ecommerce_mobile/utils/api_client_exception.dart';
 import 'package:ecommerce_mobile/utils/utils_widgets.dart';
@@ -18,12 +21,34 @@ class CartListScreen extends StatefulWidget {
 
 class _CartListScreenState extends State<CartListScreen> {
   late CartProvider _cartProvider;
+  late PaymentCardIB180079Provider _paymentCardProvider;
   bool _checkoutBusy = false;
+
+  SearchResult<PaymentCardIB180079>? _cardsResult;
+  int? _selectedCardId;
 
   @override
   void initState() {
     super.initState();
     _cartProvider = context.read<CartProvider>();
+    _paymentCardProvider = context.read<PaymentCardIB180079Provider>();
+    _loadCards();
+  }
+
+  Future<void> _loadCards() async {
+    try {
+      var data = await _paymentCardProvider.get(
+        filter: {
+          'userId':
+              int.tryParse(AuthProvider.accessTokenDecoded?['Id'] ?? '0') ?? 0,
+        },
+      );
+      setState(() {
+        _cardsResult = data;
+      });
+    } on Exception catch (e) {
+      alertBox(context, 'Error', e.toString());
+    }
   }
 
   double _subtotal(CartProvider cart) {
@@ -53,6 +78,11 @@ class _CartListScreenState extends State<CartListScreen> {
       return;
     }
 
+    if (_selectedCardId == null) {
+      alertBox(context, 'Error', 'Odaberite karticu');
+      return;
+    }
+
     setState(() => _checkoutBusy = true);
     try {
       final payload = _cartProvider.cart.items
@@ -63,7 +93,9 @@ class _CartListScreenState extends State<CartListScreen> {
             },
           )
           .toList();
-      final order = await context.read<OrderProvider>().checkout(payload);
+      final order = await context
+          .read<OrderProvider>()
+          .checkout(payload, _selectedCardId!);
 
       _cartProvider.clearCart();
 
@@ -125,6 +157,22 @@ class _CartListScreenState extends State<CartListScreen> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<int>(
+            initialValue: _selectedCardId,
+            decoration: const InputDecoration(labelText: 'Kartica za plaćanje'),
+            items: _cardsResult?.items?.map((card) {
+              return DropdownMenuItem<int>(
+                value: card.id,
+                child: Text(card.cardNumber ?? ''),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                _selectedCardId = value;
+              });
+            },
           ),
           const SizedBox(height: 12),
           SizedBox(

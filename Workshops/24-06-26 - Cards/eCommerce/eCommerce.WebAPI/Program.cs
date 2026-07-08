@@ -52,7 +52,8 @@ TypeAdapterConfig<Asset, AssetResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<ProductReview, ProductReviewResponse>.NewConfig()
     .Map(dest => dest.ReviewerDisplayName, src => $"{src.User.FirstName} {src.User.LastName}".Trim());
 TypeAdapterConfig<Order, OrderResponse>.NewConfig()
-    .Map(dest => dest.Status, src => (int)src.Status);
+    .Map(dest => dest.Status, src => (int)src.Status)
+    .Map(dest => dest.PaymentCardId, src => src.PaymentCardIB180079Id);
 TypeAdapterConfig<OrderItem, OrderItemResponse>.NewConfig()
     .Map(dest => dest.ProductName, src => src.Product != null ? src.Product.Name : string.Empty);
 
