@@ -51,6 +51,22 @@ namespace eCommerce.Services.Database
                 .HasForeignKey(pr => pr.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+
+
+            modelBuilder.Entity<ChatIB180079>()
+                 .HasOne(pr => pr.User1)
+                 .WithMany()
+                 .HasForeignKey(pr => pr.User1Id)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ChatIB180079>()
+                 .HasOne(pr => pr.User2)
+                 .WithMany()
+                 .HasForeignKey(pr => pr.User2Id)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+
+
             // Add any additional model configurations here
         }
     }

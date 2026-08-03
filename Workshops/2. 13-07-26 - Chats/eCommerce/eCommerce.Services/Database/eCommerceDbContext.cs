@@ -24,6 +24,8 @@ namespace eCommerce.Services.Database
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Asset> Assets { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<ChatIB180079> Chats { get; set; }
+        public DbSet<ChatMessageIB180079> ChatMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
