@@ -55,7 +55,25 @@ namespace eCommerce.Services
             var currentUserId = search?.UserId ?? 0;
 
             var items = ApplyFilters(chats, search)
-                .Select(c => MapToResponse(c, currentUserId))
+                .Select(c =>
+                {
+                    var other = c.User1Id == currentUserId ? c.User2 : c.User1;
+                    var lastMessage = c.Messages.OrderByDescending(m => m.CreatedAt).FirstOrDefault();
+
+                    return new ChatIB180079Response
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        CreatedAt = c.CreatedAt,
+                        User1Id = c.User1Id,
+                        User2Id = c.User2Id,
+                        OtherUserId = other.Id,
+                        OtherUserFirstName = other.FirstName,
+                        OtherUserLastName = other.LastName,
+                        LastMessageContent = lastMessage?.Content,
+                        LastMessageCreatedAt = lastMessage?.CreatedAt
+                    };
+                })
                 .OrderByDescending(r => r.LastMessageCreatedAt ?? r.CreatedAt)
                 .ToList();
 
@@ -74,29 +92,6 @@ namespace eCommerce.Services
             }
 
             return await base.InsertAsync(request);
-        }
-
-        private ChatIB180079Response MapToResponse(ChatIB180079 chat, int currentUserId)
-        {
-            var other = chat.User1Id == currentUserId ? chat.User2 : chat.User1;
-
-            var lastMessage = chat.Messages
-                .OrderByDescending(m => m.CreatedAt)
-                .FirstOrDefault();
-
-            return new ChatIB180079Response
-            {
-                Id = chat.Id,
-                Name = chat.Name,
-                CreatedAt = chat.CreatedAt,
-                User1Id = chat.User1Id,
-                User2Id = chat.User2Id,
-                OtherUserId = other.Id,
-                OtherUserFirstName = other.FirstName,
-                OtherUserLastName = other.LastName,
-                LastMessageContent = lastMessage?.Content,
-                LastMessageCreatedAt = lastMessage?.CreatedAt
-            };
         }
     }
 }
