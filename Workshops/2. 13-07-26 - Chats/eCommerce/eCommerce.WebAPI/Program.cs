@@ -87,6 +87,9 @@ builder.Services.AddScoped<IQueryOptimizationService, QueryOptimizationService> 
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductReviewService, ProductReviewService>();
 
+
+builder.Services.AddScoped<IChatService, ChatService>();
+
 builder.Services.AddScoped<IValidator<ProductTypeInsertRequest>, ProductTypeInsertValidator>();
 builder.Services.AddScoped<IValidator<ProductTypeUpdateRequest>, ProductTypeUpdateValidator>();
 builder.Services.AddScoped<IValidator<UnitOfMeasureInsertRequest>, UnitOfMeasureInsertValidator>();
@@ -99,6 +102,10 @@ builder.Services.AddScoped<IValidator<AssetInsertRequest>, AssetInsertValidator>
 builder.Services.AddScoped<IValidator<AssetUpdateRequest>, AssetUpdateValidator>();
 builder.Services.AddScoped<IValidator<ProductReviewInsertRequest>, ProductReviewInsertValidator>();
 builder.Services.AddScoped<IValidator<ProductReviewUpdateRequest>, ProductReviewUpdateValidator>();
+
+builder.Services.AddScoped<IValidator<ChatInsertRequest>, ChatInsertValidator>();
+builder.Services.AddScoped<IValidator<ChatUpdateRequest>, ChatUpdateValidator>();
+
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

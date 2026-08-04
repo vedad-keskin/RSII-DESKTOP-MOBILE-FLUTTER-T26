@@ -29,7 +29,7 @@ namespace eCommerce.Services.Database
         [ForeignKey("User2Id")]
         public User User2 { get; set; } = null!;
 
-        //public ICollection<Category> ChildCategories { get; set; } = new List<Category>();
+        public ICollection<ChatMessageIB180079> ChatMessages { get; set; } = new List<ChatMessageIB180079>();
 
 
     }
