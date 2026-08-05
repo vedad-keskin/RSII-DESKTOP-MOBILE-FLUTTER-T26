@@ -56,6 +56,10 @@ TypeAdapterConfig<Order, OrderResponse>.NewConfig()
 TypeAdapterConfig<OrderItem, OrderItemResponse>.NewConfig()
     .Map(dest => dest.ProductName, src => src.Product != null ? src.Product.Name : string.Empty);
 
+TypeAdapterConfig<ChatIB180079, ChatResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig < ChatMessageIB180079, ChatMessageResponse>.NewConfig().IgnoreNullValues(true);
+
+
 
 // register application services
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -89,6 +93,10 @@ builder.Services.AddScoped<IProductReviewService, ProductReviewService>();
 
 
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IChatMessageService, ChatMessageService>();
+
+
+
 
 builder.Services.AddScoped<IValidator<ProductTypeInsertRequest>, ProductTypeInsertValidator>();
 builder.Services.AddScoped<IValidator<ProductTypeUpdateRequest>, ProductTypeUpdateValidator>();
@@ -105,6 +113,9 @@ builder.Services.AddScoped<IValidator<ProductReviewUpdateRequest>, ProductReview
 
 builder.Services.AddScoped<IValidator<ChatInsertRequest>, ChatInsertValidator>();
 builder.Services.AddScoped<IValidator<ChatUpdateRequest>, ChatUpdateValidator>();
+
+builder.Services.AddScoped<IValidator<ChatMessageInsertRequest>, ChatMessageInsertValidator>();
+builder.Services.AddScoped<IValidator<ChatMessageUpdateRequest>, ChatMessageUpdateValidator>();
 
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
