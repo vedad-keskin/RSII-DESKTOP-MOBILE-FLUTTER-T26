@@ -67,6 +67,7 @@ namespace eCommerce.Services
                    return new ChatResponse
                    {
                        Id = c.Id,
+                       Name = c.Name,
                        CreatedAt = c.CreatedAt,
                        User1Id = c.User1Id,
                        User2Id = c.User2Id,

@@ -130,6 +130,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
             ),
+               ListTile(
+              leading: Icon(Icons.message),
+              title: Text("Poruke"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const UserReviewScreen(),
+                  ),
+                );
+              },
+            ),
             ListTile(
               leading: Icon(Icons.pending),
               title: Text("Edit profile"),
