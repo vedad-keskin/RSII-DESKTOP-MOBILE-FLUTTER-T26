@@ -2,6 +2,7 @@ import 'package:ecommerce_mobile/layouts/container_screen.dart';
 import 'package:ecommerce_mobile/providers/auth_provider.dart';
 import 'package:ecommerce_mobile/providers/cart_provider.dart';
 import 'package:ecommerce_mobile/providers/category_provider.dart';
+import 'package:ecommerce_mobile/providers/chat_provider.dart';
 import 'package:ecommerce_mobile/providers/order_provider.dart';
 import 'package:ecommerce_mobile/providers/product_provider.dart';
 import 'package:ecommerce_mobile/providers/product_review_provider.dart';
@@ -20,6 +21,7 @@ void main() {
         ChangeNotifierProvider(create: (_)=> UserProvider()),
         ChangeNotifierProvider(create: (_)=> OrderProvider()),
         ChangeNotifierProvider(create: (_)=> ProductReviewProvider()),
+        ChangeNotifierProvider(create: (_)=> ChatProvider()),
       ],
       child: const MyApp()));
 }
