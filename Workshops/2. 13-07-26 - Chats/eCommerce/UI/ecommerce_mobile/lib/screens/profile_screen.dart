@@ -1,5 +1,6 @@
 import 'package:ecommerce_mobile/providers/auth_provider.dart';
 import 'package:ecommerce_mobile/screens/change_password_screen.dart';
+import 'package:ecommerce_mobile/screens/chat_screen.dart';
 import 'package:ecommerce_mobile/screens/orders_list_screen.dart';
 import 'package:ecommerce_mobile/screens/profile_settings_screen.dart';
 import 'package:ecommerce_mobile/screens/user_review_screen.dart';
@@ -137,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const UserReviewScreen(),
+                    builder: (context) => const ChatScreen(),
                   ),
                 );
               },
