@@ -23,6 +23,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
 
 
+
+
   late ChatProvider _chatProvider;
   late UserProvider _userProvider;
 
@@ -31,8 +33,20 @@ class _ChatScreenState extends State<ChatScreen> {
 
   bool isLoading = true;
 
-  int? selectedUserId;
 
+  final TextEditingController _nameController = TextEditingController();
+
+
+  int? selectedUserId;
+  int? currentUserId = int.tryParse(AuthProvider.accessTokenDecoded?['Id'] ?? '0') ?? 0;
+
+
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -53,7 +67,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
       var data = await _chatProvider.get(
         filter: {
-          'user1Id': int.tryParse(AuthProvider.accessTokenDecoded?['Id'] ?? '0') ?? 0,
+          'user1Id': currentUserId,
           'user2Id': selectedUserId
         },
       );
@@ -76,12 +90,37 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Column(
         children: [
           isLoading ? CircularProgressIndicator() : _buildSearch(),
+          isLoading ? CircularProgressIndicator() : _buildTextBox(),
           SizedBox(height: 20,),
           isLoading ? CircularProgressIndicator() : buildChatList(),
         ],
       ),
     );
   }
+
+
+ Padding _buildTextBox() {
+    return Padding(
+          padding: const EdgeInsets.all(3.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(3.0),
+                  child: TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(label: Text("Naziv razgovora")),
+                  ),
+                ),
+              ),
+      
+            ],
+          ),
+        );
+  }
+
+
+
 
   Padding _buildSearch() {
     return Padding(
@@ -92,7 +131,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: DropdownButtonFormField(
                   initialValue: selectedUserId,
                   hint: const Text('Odaberi korisnika'),
-                  items: userResult!.items!.map((entry) {
+                  items: userResult!.items!
+                  .where((x) => x.id != currentUserId  )
+                  .map((entry) {
                     return DropdownMenuItem<int>(
                       value: entry.id,
                       child:  Text('${entry.firstName} - ${entry.lastName}'),
@@ -107,19 +148,77 @@ class _ChatScreenState extends State<ChatScreen> {
                     setState(() {
                       selectedUserId = value;
 
-                     initData(); // prebaciti ga ispod 
                     });
+                     await initData(); 
                   },
                 ),
               ),
               SizedBox(width: 10),
               ElevatedButton(onPressed: () async{
-                await initData();
-              }, child: Text("Search"))
+                
+
+             await _submit();
+
+
+
+
+              }, child: Text("Kreiraj razgovor"))
             ],
           ),
         );
   }
+
+
+  Future<void> _submit() async {
+  
+
+    if(_nameController.text.trim().isEmpty){
+
+        alertBox(context, 'Upozorenje', "Naziv razgovora je obavezan");
+
+    }else if(selectedUserId == null){
+
+        alertBox(context, 'Upozorenje', "Korisnik je obavezan");
+
+
+
+    }else{
+
+
+
+
+   try {
+      await context.read<ChatProvider>().insert({
+        'name': _nameController.text.trim(),
+         // Razgovor 1
+
+
+        'user1Id': currentUserId,
+        'user2Id': selectedUserId
+      });
+      if (mounted) {
+        
+        _nameController.clear();
+         await initData(); 
+
+      }
+    } on Exception catch (e) {
+      if (mounted) {
+        alertBox(context, 'Upozorenje', e.toString());
+      }
+    }
+
+
+    }
+
+
+
+
+ 
+
+  }
+
+
 
   Expanded buildChatList() {
     return Expanded(
