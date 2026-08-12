@@ -96,6 +96,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
           // isLoading ? CircularProgressIndicator() : _buildTextBox(),
           // SizedBox(height: 20,),
           isLoading ? CircularProgressIndicator() : buildChatList(),
+          _buildTextBox(),
         ],
       ),
     );
@@ -112,14 +113,43 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                   padding: const EdgeInsets.all(3.0),
                   child: TextField(
                     controller: _nameController,
-                    decoration: InputDecoration(label: Text("Naziv razgovora")),
+                    decoration: InputDecoration(label: Text("Poruka")),
                   ),
                 ),
               ),
-      
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  await _submit();
+                },
+                child: Text("Pošalji"),
+              ),
             ],
           ),
         );
+  }
+
+  Future<void> _submit() async {
+    if (_nameController.text.trim().isEmpty) {
+      alertBox(context, 'Upozorenje', "Poruka je obavezna");
+      return;
+    }
+
+    try {
+      await _chatMessageProvider.insert({
+        'chatId': widget.chatId,
+        'senderId': currentUserId,
+        'content': _nameController.text.trim(),
+      });
+      if (mounted) {
+        _nameController.clear();
+        await initData();
+      }
+    } on Exception catch (e) {
+      if (mounted) {
+        alertBox(context, 'Upozorenje', e.toString());
+      }
+    }
   }
 
 
@@ -229,22 +259,25 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
         itemCount: result?.items?.length ?? 0,
         itemBuilder: (context, index) {
           var chat = result!.items![index];
+          var isMine = chat.senderId == currentUserId;
 
-          return Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: ListTile(
-              title: Row(
-                children: [
-
-                  Text(chat.content),
-                  SizedBox(width: 8),
-
-             
-                ],
-              ),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text("${chat.createdAt.hour}:${chat.createdAt.minute} ${chat.createdAt.day}.${chat.createdAt.month}.${chat.createdAt.year}"),
+          return Padding(
+            padding: EdgeInsets.only(
+              left: isMine ? 80 : 8,
+              right: isMine ? 8 : 80,
+            ),
+            child: Card(
+              child: ListTile(
+                title: Row(
+                  children: [
+                    Text(chat.content),
+                    SizedBox(width: 8),
+                  ],
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text("${chat.createdAt.hour}:${chat.createdAt.minute} ${chat.createdAt.day}.${chat.createdAt.month}.${chat.createdAt.year}"),
+                ),
               ),
             ),
           );
