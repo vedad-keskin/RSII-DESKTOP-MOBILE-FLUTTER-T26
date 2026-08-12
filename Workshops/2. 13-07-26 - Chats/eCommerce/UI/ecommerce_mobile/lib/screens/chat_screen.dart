@@ -253,13 +253,14 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
 
 
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ChatDetailsScreen(chatId: chat.id ,),
+                    builder: (context) => ChatDetailsScreen(chatId: chat.id),
                   ),
                 );
+                await initData();
               },
 
             ),
