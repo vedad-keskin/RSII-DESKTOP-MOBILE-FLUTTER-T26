@@ -3,6 +3,7 @@ import 'package:ecommerce_mobile/models/chat.dart';
 import 'package:ecommerce_mobile/models/user.dart';
 import 'package:ecommerce_mobile/providers/chat_provider.dart';
 import 'package:ecommerce_mobile/providers/user_provider.dart';
+import 'package:ecommerce_mobile/screens/chat_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -250,6 +251,16 @@ class _ChatScreenState extends State<ChatScreen> {
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(chat.lastMessageContent ?? "Nema poruke"),
               ),
+
+                 onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatDetailsScreen(chatId: chat.id,),
+                  ),
+                );
+              },
+
             ),
           );
         },
