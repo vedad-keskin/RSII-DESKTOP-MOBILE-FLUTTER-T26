@@ -72,6 +72,7 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
       var data = await _chatMessageProvider.get(
         filter: {
           'chatId': widget.chatId,
+          'pageSize' : 1000
         },
       );
       setState(() {
@@ -93,9 +94,9 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
       child: Column(
         children: [
           // isLoading ? CircularProgressIndicator() : _buildSearch(),
-          // isLoading ? CircularProgressIndicator() : _buildTextBox(),
           // SizedBox(height: 20,),
           isLoading ? CircularProgressIndicator() : buildChatList(),
+          isLoading ? CircularProgressIndicator() : _buildTextBox(),
         ],
       ),
     );
@@ -112,11 +113,25 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                   padding: const EdgeInsets.all(3.0),
                   child: TextField(
                     controller: _nameController,
-                    decoration: InputDecoration(label: Text("Naziv razgovora")),
+                    decoration: InputDecoration(label: Text("Poruka")),
                   ),
                 ),
               ),
       
+             SizedBox(width: 10),
+              ElevatedButton(onPressed: () async{
+                
+
+                  await _submit();
+
+
+
+
+              }, child: Text("Pošalji"))
+           
+         
+
+
             ],
           ),
         );
@@ -172,54 +187,42 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
   // }
 
 
-  // Future<void> _submit() async {
+  Future<void> _submit() async {
   
 
-  //   if(_nameController.text.trim().isEmpty){
+    if(_nameController.text.trim().isEmpty){
 
-  //       alertBox(context, 'Upozorenje', "Naziv razgovora je obavezan");
+        alertBox(context, 'Upozorenje', "Poruka je obavezna");
 
-  //   }else if(selectedUserId == null){
-
-  //       alertBox(context, 'Upozorenje', "Korisnik je obavezan");
-
-
-
-  //   }else{
-
-
-
-
-  //  try {
-  //     await context.read<ChatProvider>().insert({
-  //       'name': _nameController.text.trim(),
-  //        // Razgovor 1
-
-
-  //       'user1Id': currentUserId,
-  //       'user2Id': selectedUserId
-  //     });
-  //     if (mounted) {
+    }
+    else{
+      try {
+      await context.read<ChatMessageProvider>().insert({
+        'chatId': widget.chatId,
+        'senderId': currentUserId,
+        'content': _nameController.text.trim()
+      });
+      if (mounted) {
         
-  //       _nameController.clear();
-  //        await initData(); 
+        _nameController.clear();
+         await initData(); 
 
-  //     }
-  //   } on Exception catch (e) {
-  //     if (mounted) {
-  //       alertBox(context, 'Upozorenje', e.toString());
-  //     }
-  //   }
+      }
+    } on Exception catch (e) {
+      if (mounted) {
+        alertBox(context, 'Upozorenje', e.toString());
+      }
+    }
 
 
-  //   }
+    }
 
 
 
 
  
 
-  // }
+  }
 
 
 
@@ -230,7 +233,17 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
         itemBuilder: (context, index) {
           var chat = result!.items![index];
 
-          return Card(
+          var isMessageMine = chat.senderId == currentUserId;
+
+
+return Padding(padding: EdgeInsets.only(
+
+ left: isMessageMine ? 80 : 8,
+ right: isMessageMine ? 8 : 80
+
+),child: 
+
+Card(
             margin: const EdgeInsets.only(bottom: 8),
             child: ListTile(
               title: Row(
@@ -246,10 +259,38 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
                 padding: const EdgeInsets.only(top: 8),
                 child: Text("${chat.createdAt.hour}:${chat.createdAt.minute} ${chat.createdAt.day}.${chat.createdAt.month}.${chat.createdAt.year}"),
               ),
+              trailing: isMessageMine
+                  ? IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () async {
+                        try {
+                          await _chatMessageProvider.remove(chat.id);
+                          await initData();
+                        } on Exception catch (e) {
+                          alertBox(context, 'Upozorenje', e.toString());
+                        }
+                      },
+                    )
+                  : null,
             ),
-          );
+          )
+
+
+);
+
+
+           
         },
       ),
     );
   }
+
+
+
+
+
+
+
+
+  
 }
