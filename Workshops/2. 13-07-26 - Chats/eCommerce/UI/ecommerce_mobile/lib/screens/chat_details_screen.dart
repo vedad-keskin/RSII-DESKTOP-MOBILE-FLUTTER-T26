@@ -24,11 +24,6 @@ class ChatDetailsScreen extends StatefulWidget {
 }
 
 class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
-
-
-
-
-
   late ChatMessageProvider _chatMessageProvider;
   // late UserProvider _userProvider;
 
@@ -37,14 +32,11 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
 
   bool isLoading = true;
 
-
   final TextEditingController _nameController = TextEditingController();
 
-
   int? selectedUserId;
-  int? currentUserId = int.tryParse(AuthProvider.accessTokenDecoded?['Id'] ?? '0') ?? 0;
-
-
+  int? currentUserId =
+      int.tryParse(AuthProvider.accessTokenDecoded?['Id'] ?? '0') ?? 0;
 
   @override
   void dispose() {
@@ -65,15 +57,10 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
 
   Future<void> initData() async {
     try {
-
       // var users = await _userProvider.get();
 
-
       var data = await _chatMessageProvider.get(
-        filter: {
-          'chatId': widget.chatId,
-          'pageSize' : 1000
-        },
+        filter: {'chatId': widget.chatId, 'pageSize': 1000},
       );
       setState(() {
         result = data;
@@ -102,129 +89,56 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
     );
   }
 
-
- Padding _buildTextBox() {
+  Padding _buildTextBox() {
     return Padding(
-          padding: const EdgeInsets.all(3.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(3.0),
-                  child: TextField(
-                    controller: _nameController,
-                    decoration: InputDecoration(label: Text("Poruka")),
-                  ),
-                ),
+      padding: const EdgeInsets.all(3.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(3.0),
+              child: TextField(
+                controller: _nameController,
+                decoration: InputDecoration(label: Text("Poruka")),
               ),
-      
-             SizedBox(width: 10),
-              ElevatedButton(onPressed: () async{
-                
-
-                  await _submit();
-
-
-
-
-              }, child: Text("Pošalji"))
-           
-         
-
-
-            ],
+            ),
           ),
-        );
+
+          SizedBox(width: 10),
+          ElevatedButton(
+            onPressed: () async {
+              await _submit();
+            },
+            child: Text("Pošalji"),
+          ),
+        ],
+      ),
+    );
   }
 
-
-
-
-  // Padding _buildSearch() {
-  //   return Padding(
-  //         padding: const EdgeInsets.all(8.0),
-  //         child: Row(
-  //           children: [
-  //             Expanded(
-  //               child: DropdownButtonFormField(
-  //                 initialValue: selectedUserId,
-  //                 hint: const Text('Odaberi korisnika'),
-  //                 items: userResult!.items!
-  //                 .where((x) => x.id != currentUserId  )
-  //                 .map((entry) {
-  //                   return DropdownMenuItem<int>(
-  //                     value: entry.id,
-  //                     child:  Text('${entry.firstName} - ${entry.lastName}'),
-  //                   );
-  //                 }).toList(),
-  //                 onChanged:(value) async {
-                    
-  //                   if(value == 0){
-  //                     value = null;
-  //                   }
-
-  //                   setState(() {
-  //                     selectedUserId = value;
-
-  //                   });
-  //                    await initData(); 
-  //                 },
-  //               ),
-  //             ),
-  //             SizedBox(width: 10),
-  //             ElevatedButton(onPressed: () async{
-                
-
-  //            await _submit();
-
-
-
-
-  //             }, child: Text("Kreiraj razgovor"))
-  //           ],
-  //         ),
-  //       );
-  // }
 
 
   Future<void> _submit() async {
-  
-
-    if(_nameController.text.trim().isEmpty){
-
-        alertBox(context, 'Upozorenje', "Poruka je obavezna");
-
-    }
-    else{
+    if (_nameController.text.trim().isEmpty) {
+      alertBox(context, 'Upozorenje', "Poruka je obavezna");
+    } else {
       try {
-      await context.read<ChatMessageProvider>().insert({
-        'chatId': widget.chatId,
-        'senderId': currentUserId,
-        'content': _nameController.text.trim()
-      });
-      if (mounted) {
-        
-        _nameController.clear();
-         await initData(); 
-
-      }
-    } on Exception catch (e) {
-      if (mounted) {
-        alertBox(context, 'Upozorenje', e.toString());
+        await context.read<ChatMessageProvider>().insert({
+          'chatId': widget.chatId,
+          'senderId': currentUserId,
+          'content': _nameController.text.trim(),
+        });
+        if (mounted) {
+          _nameController.clear();
+          await initData();
+        }
+      } on Exception catch (e) {
+        if (mounted) {
+          alertBox(context, 'Upozorenje', e.toString());
+        }
       }
     }
-
-
-    }
-
-
-
-
- 
-
   }
-
-
 
   Expanded buildChatList() {
     return Expanded(
@@ -235,62 +149,48 @@ class _ChatDetailsScreenState extends State<ChatDetailsScreen> {
 
           var isMessageMine = chat.senderId == currentUserId;
 
-
-return Padding(padding: EdgeInsets.only(
-
- left: isMessageMine ? 80 : 8,
- right: isMessageMine ? 8 : 80
-
-),child: 
-
-Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: ListTile(
-              title: Row(
-                children: [
-
-                  Text(chat.content),
-                  SizedBox(width: 8),
-
-             
-                ],
-              ),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text("${chat.createdAt.hour}:${chat.createdAt.minute} ${chat.createdAt.day}.${chat.createdAt.month}.${chat.createdAt.year}"),
-              ),
-              trailing: isMessageMine
-                  ? IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () async {
-                        try {
-                          await _chatMessageProvider.remove(chat.id);
-                          await initData();
-                        } on Exception catch (e) {
-                          alertBox(context, 'Upozorenje', e.toString());
-                        }
-                      },
-                    )
-                  : null,
+          return Padding(
+            padding: EdgeInsets.only(
+              left: isMessageMine ? 80 : 8,
+              right: isMessageMine ? 8 : 80,
             ),
-          )
+            child: Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                title: Row(children: [Text(chat.content), SizedBox(width: 8)]),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    "${chat.createdAt.hour}:${chat.createdAt.minute} ${chat.createdAt.day}.${chat.createdAt.month}.${chat.createdAt.year}",
+                  ),
+                ),
 
+                trailing: isMessageMine
+                    ? IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () async {
+                          // _cartProvider.removeFromCart(cartItem.product);
 
-);
-
-
-           
+                          try {
+                            await context.read<ChatMessageProvider>().remove(
+                              chat.id,
+                            );
+                            if (mounted) {
+                              await initData();
+                            }
+                          } on Exception catch (e) {
+                            if (mounted) {
+                              alertBox(context, 'Upozorenje', e.toString());
+                            }
+                          }
+                        },
+                      )
+                    : null,
+              ),
+            ),
+          );
         },
       ),
     );
   }
-
-
-
-
-
-
-
-
-  
 }
