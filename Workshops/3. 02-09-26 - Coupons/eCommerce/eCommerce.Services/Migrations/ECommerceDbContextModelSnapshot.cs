@@ -189,6 +189,167 @@ namespace eCommerce.Services.Migrations
                         });
                 });
 
+            modelBuilder.Entity("eCommerce.Services.Database.CouponIB180079", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("DiscountPercentage")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaxUses")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Coupons");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "SAVE",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Ten percent discount",
+                            DiscountPercentage = 10m,
+                            IsActive = true,
+                            MaxUses = 10,
+                            ValidFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            ValidTo = new DateTime(2030, 12, 31, 23, 59, 59, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "WELCOME",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Twenty-five percent discount",
+                            DiscountPercentage = 25m,
+                            IsActive = true,
+                            MaxUses = 5,
+                            ValidFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            ValidTo = new DateTime(2030, 12, 31, 23, 59, 59, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "EXPIRED",
+                            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Expired coupon",
+                            DiscountPercentage = 20m,
+                            IsActive = true,
+                            MaxUses = 10,
+                            ValidFrom = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            ValidTo = new DateTime(2025, 12, 31, 23, 59, 59, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "FUTURE",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Coupon that is not valid yet",
+                            DiscountPercentage = 15m,
+                            IsActive = true,
+                            MaxUses = 10,
+                            ValidFrom = new DateTime(2035, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            ValidTo = new DateTime(2035, 12, 31, 23, 59, 59, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Code = "INACTIVE",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Inactive coupon",
+                            DiscountPercentage = 30m,
+                            IsActive = false,
+                            MaxUses = 10,
+                            ValidFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            ValidTo = new DateTime(2030, 12, 31, 23, 59, 59, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Code = "LIMIT",
+                            CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Coupon with its only use already recorded",
+                            DiscountPercentage = 50m,
+                            IsActive = true,
+                            MaxUses = 1,
+                            ValidFrom = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            ValidTo = new DateTime(2030, 12, 31, 23, 59, 59, 0, DateTimeKind.Utc)
+                        });
+                });
+
+            modelBuilder.Entity("eCommerce.Services.Database.CouponUsageIB180079", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CouponId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UsedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("CouponId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("CouponUsages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CouponId = 6,
+                            DiscountAmount = 10m,
+                            UsedAt = new DateTime(2026, 9, 2, 12, 0, 0, 0, DateTimeKind.Utc),
+                            UserId = 4
+                        });
+                });
+
             modelBuilder.Entity("eCommerce.Services.Database.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -1240,6 +1401,25 @@ namespace eCommerce.Services.Migrations
                     b.Navigation("ParentCategory");
                 });
 
+            modelBuilder.Entity("eCommerce.Services.Database.CouponUsageIB180079", b =>
+                {
+                    b.HasOne("eCommerce.Services.Database.CouponIB180079", "Coupon")
+                        .WithMany("Usages")
+                        .HasForeignKey("CouponId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("eCommerce.Services.Database.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Coupon");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("eCommerce.Services.Database.Order", b =>
                 {
                     b.HasOne("eCommerce.Services.Database.User", "User")
@@ -1370,6 +1550,11 @@ namespace eCommerce.Services.Migrations
                     b.Navigation("ChildCategories");
 
                     b.Navigation("ProductCategories");
+                });
+
+            modelBuilder.Entity("eCommerce.Services.Database.CouponIB180079", b =>
+                {
+                    b.Navigation("Usages");
                 });
 
             modelBuilder.Entity("eCommerce.Services.Database.Order", b =>

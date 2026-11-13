@@ -15,6 +15,102 @@ namespace eCommerce.Services.Database
             SeedRoles(modelBuilder);
             SeedUsers(modelBuilder);
             SeedUserRoles(modelBuilder);
+            SeedCoupons(modelBuilder);
+        }
+
+        private void SeedCoupons(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CouponIB180079>().HasData(
+                new
+                {
+                    Id = 1,
+                    Code = "SAVE",
+                    Description = "Ten percent discount",
+                    DiscountPercentage = 10m,
+                    ValidFrom = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    ValidTo = new DateTime(2030, 12, 31, 23, 59, 59, DateTimeKind.Utc),
+                    MaxUses = 10,
+                    IsActive = true,
+                    CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 2,
+                    Code = "WELCOME",
+                    Description = "Twenty-five percent discount",
+                    DiscountPercentage = 25m,
+                    ValidFrom = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    ValidTo = new DateTime(2030, 12, 31, 23, 59, 59, DateTimeKind.Utc),
+                    MaxUses = 5,
+                    IsActive = true,
+                    CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 3,
+                    Code = "EXPIRED",
+                    Description = "Expired coupon",
+                    DiscountPercentage = 20m,
+                    ValidFrom = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    ValidTo = new DateTime(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc),
+                    MaxUses = 10,
+                    IsActive = true,
+                    CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 4,
+                    Code = "FUTURE",
+                    Description = "Coupon that is not valid yet",
+                    DiscountPercentage = 15m,
+                    ValidFrom = new DateTime(2035, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    ValidTo = new DateTime(2035, 12, 31, 23, 59, 59, DateTimeKind.Utc),
+                    MaxUses = 10,
+                    IsActive = true,
+                    CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 5,
+                    Code = "INACTIVE",
+                    Description = "Inactive coupon",
+                    DiscountPercentage = 30m,
+                    ValidFrom = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    ValidTo = new DateTime(2030, 12, 31, 23, 59, 59, DateTimeKind.Utc),
+                    MaxUses = 10,
+                    IsActive = false,
+                    CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null
+                },
+                new
+                {
+                    Id = 6,
+                    Code = "LIMIT",
+                    Description = "Coupon with its only use already recorded",
+                    DiscountPercentage = 50m,
+                    ValidFrom = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+                    ValidTo = new DateTime(2030, 12, 31, 23, 59, 59, DateTimeKind.Utc),
+                    MaxUses = 1,
+                    IsActive = true,
+                    CreatedAt = new DateTime(2026, 3, 9, 0, 0, 0, DateTimeKind.Utc),
+                    UpdatedAt = (DateTime?)null
+                }
+            );
+
+            modelBuilder.Entity<CouponUsageIB180079>().HasData(
+                new
+                {
+                    Id = 1,
+                    CouponId = 6,
+                    UserId = 4,
+                    UsedAt = new DateTime(2026, 9, 2, 12, 0, 0, DateTimeKind.Utc),
+                    DiscountAmount = 10m
+                }
+            );
         }
 
         private void SeedProductTypes(ModelBuilder modelBuilder)
