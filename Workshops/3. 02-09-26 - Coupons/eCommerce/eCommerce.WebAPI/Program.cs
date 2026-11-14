@@ -47,6 +47,8 @@ TypeAdapterConfig<Category, CategoryResponse>.NewConfig().IgnoreNullValues(true)
 TypeAdapterConfig<User, UserResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<UserUpdateRequest, User>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<ProductType, ProductTypeResponse>.NewConfig().IgnoreNullValues(true);
+TypeAdapterConfig<CouponIB180079, CouponResponse>.NewConfig()
+    .Map(dest => dest.UsageCount, src => src.CouponUsages.Count);
 TypeAdapterConfig<UnitOfMeasure, UnitOfMeasureResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<Asset, AssetResponse>.NewConfig().IgnoreNullValues(true);
 TypeAdapterConfig<ProductReview, ProductReviewResponse>.NewConfig()
@@ -68,6 +70,7 @@ builder.Services.AddScoped<ActiveProductState>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 // product type service
 builder.Services.AddScoped<IProductTypeService, ProductTypeService>();
+builder.Services.AddScoped<ICouponService, CouponService>();
 // unit of measure service
 builder.Services.AddScoped<IUnitOfMeasureService, UnitOfMeasureService>();
 // user service
@@ -89,6 +92,8 @@ builder.Services.AddScoped<IProductReviewService, ProductReviewService>();
 
 builder.Services.AddScoped<IValidator<ProductTypeInsertRequest>, ProductTypeInsertValidator>();
 builder.Services.AddScoped<IValidator<ProductTypeUpdateRequest>, ProductTypeUpdateValidator>();
+builder.Services.AddScoped<IValidator<CouponInsertRequest>, CouponInsertValidator>();
+builder.Services.AddScoped<IValidator<CouponUpdateRequest>, CouponUpdateValidator>();
 builder.Services.AddScoped<IValidator<UnitOfMeasureInsertRequest>, UnitOfMeasureInsertValidator>();
 builder.Services.AddScoped<IValidator<UnitOfMeasureUpdateRequest>, UnitOfMeasureUpdateValidator>();
 builder.Services.AddScoped<IValidator<CategoriesInsertRequest>, CategoryInsertValidator>();
