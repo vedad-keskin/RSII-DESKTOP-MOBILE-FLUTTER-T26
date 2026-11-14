@@ -15,6 +15,48 @@ namespace eCommerce.Services.Database
             SeedRoles(modelBuilder);
             SeedUsers(modelBuilder);
             SeedUserRoles(modelBuilder);
+            SeedCoupons(modelBuilder);
+        }
+
+        private void SeedCoupons(ModelBuilder modelBuilder)
+        {
+
+            modelBuilder.Entity<CouponIB180079>().HasData(
+                new
+                {
+                    Id = 1,
+                    Code = "WELCOME",
+                    Description = "20% Discount",
+                    DiscountPercentage = 20m,
+                    ValidFrom = new DateTime(2026, 11, 11, 0, 0, 0, DateTimeKind.Utc),
+                    ValidTo = new DateTime(2026, 12, 12, 0, 0, 0, DateTimeKind.Utc),
+                    MaxUses = 3,
+                    IsActive = true,
+                },
+               new
+               {
+                   Id = 2,
+                   Code = "BLACK FRIDAY",
+                   Description = "50% Discount",
+                   DiscountPercentage = 50m,
+                   ValidFrom = new DateTime(2026, 12, 1, 0, 0, 0, DateTimeKind.Utc),
+                   ValidTo = new DateTime(2026, 12, 10, 0, 0, 0, DateTimeKind.Utc),
+                   MaxUses = 10,
+                   IsActive = false,
+               }, new
+               {
+                   Id = 3,
+                   Code = "SALE",
+                   Description = "10% Discount",
+                   DiscountPercentage = 10m,
+                   ValidFrom = new DateTime(2026, 10, 1, 0, 0, 0, DateTimeKind.Utc),
+                   ValidTo = new DateTime(2026, 12, 1, 0, 0, 0, DateTimeKind.Utc),
+                   MaxUses = 3,
+                   IsActive = true,
+               }
+            );
+
+
         }
 
         private void SeedProductTypes(ModelBuilder modelBuilder)
