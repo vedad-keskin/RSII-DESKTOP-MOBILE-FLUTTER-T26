@@ -3,6 +3,7 @@ import 'package:ecommerce_mobile/models/category.dart';
 import 'package:ecommerce_mobile/models/coupon.dart';
 import 'package:ecommerce_mobile/models/search_result.dart';
 import 'package:ecommerce_mobile/providers/coupon_provider.dart';
+import 'package:ecommerce_mobile/utils/utils_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:provider/provider.dart';
@@ -27,9 +28,9 @@ class _CouponDetailsScreenState extends State<CouponDetailsScreen> {
   Map<String, dynamic> _initalValue = {};
 
   late CouponProvider _couponProvider;
-  SearchResult<Coupon>? _couponsResult;
+  // SearchResult<Coupon>? _couponsResult;
 
-  bool isLoading = true;
+  // bool isLoading = true;
 
   @override
   void initState() {
@@ -42,29 +43,29 @@ class _CouponDetailsScreenState extends State<CouponDetailsScreen> {
       'validFrom': widget.coupon?.validFrom,
       'validTo': widget.coupon?.validTo,
       'maxUses': widget.coupon?.maxUses.toString(),
-      'usageCount': widget.coupon?.usageCount.toString(),
+      // 'usageCount': widget.coupon?.usageCount.toString(),
       'isActive': widget.coupon?.isActive ?? true,
-      'isCouponValid': widget.coupon?.isCouponValid ?? true,
+      // 'isCouponValid': widget.coupon?.isCouponValid ?? true,
     };
 
     _couponProvider = context.read<CouponProvider>();
-    initForm();
+    // initForm();
   }
 
-  Future initForm() async {
-    var coupons = await _couponProvider.get(filter: {});
+  // Future initForm() async {
+  //   var coupons = await _couponProvider.get(filter: {});
 
-    if (!mounted) return;
+  //   if (!mounted) return;
 
-    setState(() {
-      isLoading = false;
-      if (this.widget.coupon != null) {
-        coupons.items?.removeWhere((c) => c.id == this.widget.coupon!.id);
-      }
+  //   setState(() {
+  //     isLoading = false;
+  //     if (this.widget.coupon != null) {
+  //       coupons.items?.removeWhere((c) => c.id == this.widget.coupon!.id);
+  //     }
 
-      _couponsResult = coupons;
-    });
-  }
+  //     _couponsResult = coupons;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -94,9 +95,7 @@ class _CouponDetailsScreenState extends State<CouponDetailsScreen> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : _buildForm(theme),
+                    child: _buildForm(theme),
                   ),
                 ),
                 SizedBox(height: 24.0),
@@ -158,6 +157,13 @@ class _CouponDetailsScreenState extends State<CouponDetailsScreen> {
                 child: FormBuilderTextField(
                   name: 'code',
                   decoration: const InputDecoration(label: Text("Code")),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return mField;
+                    } else {
+                      return null;
+                    }
+                  },
                 ),
               ),
               // const SizedBox(width: 16.0),
@@ -186,6 +192,80 @@ class _CouponDetailsScreenState extends State<CouponDetailsScreen> {
             decoration: const InputDecoration(label: Text("Description")),
             maxLines: 4,
           ),
+
+          const SizedBox(height: 16.0),
+
+          FormBuilderTextField(
+                  name: 'discountPercentage',
+                  validator: (value) {
+                    if (value == null) {
+                      return mField;
+                    } else if (double.tryParse(value) == null) {
+                      return numericField;
+                    } else {
+                      return null;
+                    }
+                  },
+                  decoration: InputDecoration(label: Text("Discount Percentage")),
+                ),
+
+
+          const SizedBox(height: 16.0),
+
+          FormBuilderTextField(
+                  name: 'maxUses',
+                  validator: (value) {
+                    if (value == null) {
+                      return mField;
+                    } else if (int.tryParse(value) == null) {
+                      return numericField;
+                    } else {
+                      return null;
+                    }
+                  },
+                  decoration: InputDecoration(label: Text("Max Uses")),
+                ),
+
+
+          const SizedBox(height: 16.0),
+
+
+          FormBuilderDateTimePicker(
+            name: 'validFrom',
+            inputType: InputType.date,
+            validator: (value) {
+                    if (value == null) {
+                      return mField;
+                    } else {
+                      return null;
+                    }
+                  },
+
+                  decoration: InputDecoration(label: Text("Valid From")),
+            
+          ),
+
+        const SizedBox(height: 16.0),
+
+
+          FormBuilderDateTimePicker(
+            name: 'validTo',
+            inputType: InputType.date,
+            validator: (value) {
+                    if (value == null) {
+                      return mField;
+                    } else {
+                      return null;
+                    }
+                  },
+
+                  decoration: InputDecoration(label: Text("Valid To")),
+            
+          ),
+
+
+
+
           const SizedBox(height: 16.0),
           FormBuilderCheckbox(name: 'isActive',
            title: const Text("Is Active"), 
@@ -216,15 +296,27 @@ class _CouponDetailsScreenState extends State<CouponDetailsScreen> {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
 
 
-      var formData = _formKey.currentState!.value;
+      Map<String, dynamic> request = Map.of(
+                  _formKey.currentState!.value,
+                );
+
+     request['id'] = widget.coupon?.id;
+
+    
+      request['validFrom'] = (request['validFrom'] as DateTime).toIso8601String();
+      request['validTo'] = (request['validTo'] as DateTime).toIso8601String();
+
+
+      print(request);
+
 
       try {
         if (widget.coupon != null) {
 
-          await _couponProvider.update(widget.coupon!.id!, formData);
+          await _couponProvider.update(widget.coupon!.id!, request);
 
         } else {
-          await _couponProvider.insert(formData);
+          await _couponProvider.insert(request);
         }
 
         if (!mounted) return;
