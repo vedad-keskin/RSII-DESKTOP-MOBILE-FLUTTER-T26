@@ -1,3 +1,4 @@
+using eCommerce.Model.Exceptions;
 using eCommerce.Model.Requests;
 using eCommerce.Model.Responses;
 using eCommerce.Model.SearchObjects;
@@ -37,6 +38,19 @@ namespace eCommerce.Services
             return await Task.FromResult(query.Include(r => r.CouponUsages));
         }
 
+
+        public override async Task DeleteAsync(int id)
+        {
+
+            if (await _dbContext.CouponUsages.AnyAsync(x => x.CouponId == id))
+            {
+
+                throw new ClinetException("A Coupon that has already been used cannot be deleted.");
+
+            }
+
+            await base.DeleteAsync(id);
+        }
 
 
 

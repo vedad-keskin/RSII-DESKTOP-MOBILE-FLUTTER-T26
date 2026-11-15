@@ -1,9 +1,9 @@
 
 import 'package:ecommerce_mobile/layouts/master_screen.dart';
-import 'package:ecommerce_mobile/main.dart';
 import 'package:ecommerce_mobile/models/coupon.dart';
 import 'package:ecommerce_mobile/models/search_result.dart';
 import 'package:ecommerce_mobile/providers/coupon_provider.dart';
+import 'package:ecommerce_mobile/utils/utils_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -145,27 +145,27 @@ class _CouponListScreenState extends State<CouponListScreen> {
                                   ),
                                   ElevatedButton(
                                     onPressed: () async {
-                                      // try {
-                                      //   await _categoryProvider.remove(e.id!);
+                                      try {
+                                        await _couponProvider.remove(e.id!);
 
-                                      //    ScaffoldMessenger.of(
-                                      //         context,
-                                      //       ).showSnackBar(
-                                      //         SnackBar(
-                                      //           content: Text(
-                                      //             "Category deleted successfully",
-                                      //           ),
-                                      //         ),
-                                      //       );
+                                         ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  "Coupon deleted successfully",
+                                                ),
+                                              ),
+                                            );
                                             
-                                      //       Navigator.pop(context);
+                                            Navigator.pop(context);
 
-                                      //       setState(() {
-                                      //         initTable();
-                                      //       });
-                                      // } on Exception catch (e) {
-                                      //   alertBoxMoveBack(context, "Error", e.toString());
-                                      // }
+                                            setState(() {
+                                              initTable();
+                                            });
+                                      } on Exception catch (e) {
+                                        alertBoxMoveBack(context, "Warning", e.toString());
+                                      }
                                     },
                                     child: Text("Yes"),
                                   ),
