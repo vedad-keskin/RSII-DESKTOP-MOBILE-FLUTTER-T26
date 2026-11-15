@@ -39,7 +39,7 @@ class _CouponListScreenState extends State<CouponListScreen> {
   Future<void> initTable() async {
 
     try {
-      var data = await _couponProvider.get(filter: {});
+      var data = await _couponProvider.get(filter: {'code' : _codeController.text});
 
       setState(() {
         result = data;
@@ -61,8 +61,10 @@ class _CouponListScreenState extends State<CouponListScreen> {
 
             _buildSearch(),
 
-            isLoading ? CircularProgressIndicator() : _buildTable()
-            
+            isLoading ? CircularProgressIndicator() : _buildTable(),
+
+            Text('Ukupno trenutno važećih kupona: ${result?.items?.where((x) => x.isCouponValid ).length ?? 0}')
+          
           ],
         ),
       ),
@@ -192,6 +194,16 @@ class _CouponListScreenState extends State<CouponListScreen> {
                   child: TextField(
                     controller: _codeController,
                     decoration: InputDecoration(label: Text("Code")),
+
+
+onChanged:(value) {
+  
+initTable();
+
+},
+
+
+
                   ),
                 ),
               ),
