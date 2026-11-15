@@ -53,7 +53,27 @@ namespace eCommerce.Services
         }
 
 
+        public override async Task<CouponResponse> InsertAsync(CouponInsertRequest request)
+        {
 
+            if (await _dbContext.Coupons.AnyAsync(u => u.Code == request.Code))
+            {
+                throw new ClinetException($"Code '{request.Code}' is already in use.");
+            }
+
+            return await base.InsertAsync(request);
+        }
+
+        public override async Task<CouponResponse> UpdateAsync(int id, CouponUpdateRequest request)
+        {
+
+            if (await _dbContext.Coupons.AnyAsync(u => u.Code == request.Code))
+            {
+                throw new ClinetException($"Code '{request.Code}' is already in use.");
+            }
+
+            return await base.UpdateAsync(id, request);
+        }
 
 
 

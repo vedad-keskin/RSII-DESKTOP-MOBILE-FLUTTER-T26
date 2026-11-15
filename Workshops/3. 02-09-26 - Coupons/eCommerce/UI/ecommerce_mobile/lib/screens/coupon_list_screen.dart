@@ -3,6 +3,7 @@ import 'package:ecommerce_mobile/layouts/master_screen.dart';
 import 'package:ecommerce_mobile/models/coupon.dart';
 import 'package:ecommerce_mobile/models/search_result.dart';
 import 'package:ecommerce_mobile/providers/coupon_provider.dart';
+import 'package:ecommerce_mobile/screens/coupon_details_screen.dart';
 import 'package:ecommerce_mobile/utils/utils_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -101,14 +102,15 @@ class _CouponListScreenState extends State<CouponListScreen> {
 
                         // EDIT TODO 
 
-                        // var refresh = await Navigator.of(context)
-                        //         .push(MaterialPageRoute(
-                        //       builder: (context) => CategoryDetailsScreen(category: e),
-                        //     ));
+                        var refresh = await Navigator.of(context)
+                                .push(MaterialPageRoute(
+                              builder: (context) => 
+                              CouponDetailsScreen(coupon: e),
+                            ));
                         
-                        // if (refresh == "reload") {
-                        //   initTable();
-                        // }
+                        if (refresh == "reload") {
+                          initTable();
+                        }
                       },
                       cells: [
                       DataCell(Text(e.code.toString())),
@@ -225,17 +227,17 @@ initTable();
               ElevatedButton(onPressed: () async {
 
                 // TODO NEW
-                // var refresh = await Navigator.of(context).push(
-                //   MaterialPageRoute(
-                //     builder: (context) => const CategoryDetailsScreen(
-                //       category: null,
-                //     )
-                //   )
-                // );
+                var refresh = await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const CouponDetailsScreen(
+                      coupon: null,
+                    )
+                  )
+                );
 
-                // if( refresh == "reload"){
-                //   initTable();
-                // }
+                if( refresh == "reload"){
+                  initTable();
+                }
               }, child: Text("New")),
             ],
           ),

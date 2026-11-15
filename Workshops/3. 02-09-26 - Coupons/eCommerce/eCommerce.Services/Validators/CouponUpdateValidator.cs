@@ -11,9 +11,9 @@ namespace eCommerce.Services.Validators
                 .GreaterThan(0).WithMessage("Id must be greater than 0.");
 
             RuleFor(x => x.Code)
-                .NotEmpty().WithMessage("Name is required.")
-                .MaximumLength(100).WithMessage("Name cannot exceed 100 characters.")
-                .MinimumLength(2).WithMessage("Name must have at least 2 characters")
+                .NotEmpty().WithMessage("Code is required.")
+                .MaximumLength(100).WithMessage("Code cannot exceed 100 characters.")
+                .MinimumLength(2).WithMessage("Code must have at least 2 characters")
                 .Matches("^[A-Z]+$").WithMessage("Code must contain uppercase letters");
 
             RuleFor(x => x.Description)
@@ -22,7 +22,7 @@ namespace eCommerce.Services.Validators
             RuleFor(x => x.DiscountPercentage)
                 .GreaterThan(0).WithMessage("Discount Percentage must be higher than 0.")
                 .LessThanOrEqualTo(100)
-                .WithMessage("Discount Percentage must be lower or equal to 0.");
+                .WithMessage("Discount Percentage must be lower or equal to 100.");
 
             RuleFor(x => x.ValidTo)
                 .GreaterThan(x => x.ValidFrom).WithMessage("Valid To must be higher than Valid From.");
