@@ -67,7 +67,7 @@ namespace eCommerce.Services
         public override async Task<CouponResponse> UpdateAsync(int id, CouponUpdateRequest request)
         {
 
-            if (await _dbContext.Coupons.AnyAsync(u => u.Code == request.Code))
+            if (await _dbContext.Coupons.AnyAsync(u => u.Code == request.Code && u.Id != id))
             {
                 throw new ClinetException($"Code '{request.Code}' is already in use.");
             }
