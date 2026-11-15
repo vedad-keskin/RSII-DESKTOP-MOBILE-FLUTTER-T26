@@ -352,3 +352,7 @@ Projects/
 
 # Cursor IDE local files
 .cursor/
+
+# Local temporary files and generated artifacts
+/tmp/
+/output/
