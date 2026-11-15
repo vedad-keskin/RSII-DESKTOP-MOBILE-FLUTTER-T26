@@ -216,7 +216,7 @@ FormBuilderTextField(
                   validator: (value) {
                     if (value == null) {
                       return mField;
-                    } else if (double.tryParse(value) == null) {
+                    } else if (int.tryParse(value) == null) {
                       return numericField;
                     } else {
                       return null;
@@ -232,7 +232,13 @@ FormBuilderTextField(
             inputType: InputType.date,
             decoration: InputDecoration(label: Text("Date from")),
 
-           
+                             validator: (value) {
+                    if (value == null ) {
+                      return mField;
+                    } else {
+                      return null;
+                    }
+                  }
            
            ),
 
@@ -243,7 +249,13 @@ FormBuilderTextField(
             inputType: InputType.date,
             decoration: InputDecoration(label: Text("Date to")),
 
-           
+                             validator: (value) {
+                    if (value == null ) {
+                      return mField;
+                    } else {
+                      return null;
+                    }
+                  }
            
            ),
 
@@ -280,28 +292,20 @@ FormBuilderTextField(
     if (_formKey.currentState?.saveAndValidate() ?? false) {
 
 
-     Map<String, dynamic> request = Map.of(
-                  _formKey.currentState!.value,
-                );
+      Map<String, dynamic> request =
+          Map.of(_formKey.currentState!.value);
 
+      request['discountPercentage'] =
+          double.parse(request['discountPercentage']);
 
-     var discountPercentage = double.parse(_formKey.currentState!.value['discountPercentage']);
+      request['maxUses'] = int.parse(request['maxUses']);
 
-     request['discountPercentage'] = discountPercentage;
+      request['validFrom'] =
+          (request['validFrom'] as DateTime).toIso8601String();
 
-     
-     var maxVaue = int.parse(_formKey.currentState!.value['discountPercentage']);
+      request['validTo'] =
+          (request['validTo'] as DateTime).toIso8601String();
 
-     request['maxVaue'] = maxVaue;
-
-
-     var dateFrom = (request['dateFrom'] as DateTime).toIso8601String();
-
-     request['dateFrom'] = dateFrom;
-
-     var dateTo = (_formKey.currentState!.value['dateTo'] as DateTime).toIso8601String();
-
-     request['dateTo'] = dateTo;
 
       print(request);
 
