@@ -11,4 +11,14 @@ public class CouponController : BaseCRUDController<CouponResponse, CouponSearch,
     public CouponController(ICouponService couponService) : base(couponService)
     {
     }
+
+
+    [HttpPost("Apply")]
+    public async Task<ActionResult<CouponApplyResponse>> Apply([FromBody] CouponApplyRequest request)
+    {
+        var result = await _service.CouponApplyAsync(request);
+        return Ok(result);
+    }
+
+
 }

@@ -7,5 +7,7 @@ namespace eCommerce.Services
     public interface ICouponService : IBaseCRUDService<CouponResponse, CouponSearch, CouponInsertRequest, CouponUpdateRequest>
     {
 
+        Task<CouponApplyResponse> CouponApplyAsync(CouponApplyRequest request);
+
     }
 }
