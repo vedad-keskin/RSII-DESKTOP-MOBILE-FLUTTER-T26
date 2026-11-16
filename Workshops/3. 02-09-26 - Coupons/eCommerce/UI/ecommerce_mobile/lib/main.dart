@@ -3,6 +3,7 @@ import 'package:ecommerce_mobile/providers/auth_provider.dart';
 import 'package:ecommerce_mobile/providers/cart_provider.dart';
 import 'package:ecommerce_mobile/providers/category_provider.dart';
 import 'package:ecommerce_mobile/providers/coupon_provider.dart';
+import 'package:ecommerce_mobile/providers/coupon_usage_provider.dart';
 import 'package:ecommerce_mobile/providers/order_provider.dart';
 import 'package:ecommerce_mobile/providers/product_provider.dart';
 import 'package:ecommerce_mobile/providers/product_review_provider.dart';
@@ -22,6 +23,7 @@ void main() {
         ChangeNotifierProvider(create: (_)=> OrderProvider()),
         ChangeNotifierProvider(create: (_)=> ProductReviewProvider()),
         ChangeNotifierProvider(create: (_)=> CouponProvider()),
+        ChangeNotifierProvider(create: (_)=> CouponUsageProvider()),
       ],
       child: const MyApp()));
 }

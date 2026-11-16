@@ -97,6 +97,7 @@ builder.Services.AddScoped<IQueryOptimizationService, QueryOptimizationService> 
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductReviewService, ProductReviewService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
+builder.Services.AddScoped<ICouponUsageService, CouponUsageService>();
 
 
 
@@ -122,6 +123,8 @@ builder.Services.AddScoped<IValidator<ProductReviewUpdateRequest>, ProductReview
 
 builder.Services.AddScoped<IValidator<CouponInsertRequest>, CouponInsertValidator>();
 builder.Services.AddScoped<IValidator<CouponUpdateRequest>, CouponUpdateValidator>();
+builder.Services.AddScoped<IValidator<CouponUsageInsertRequest>, CouponUsageInsertValidator>();
+builder.Services.AddScoped<IValidator<CouponUsageUpdateRequest>, CouponUsageUpdateValidator>();
 
 
 
