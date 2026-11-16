@@ -1,5 +1,6 @@
 import 'package:ecommerce_mobile/providers/auth_provider.dart';
 import 'package:ecommerce_mobile/providers/cart_provider.dart';
+import 'package:ecommerce_mobile/providers/coupon_provider.dart';
 import 'package:ecommerce_mobile/providers/order_provider.dart';
 import 'package:ecommerce_mobile/screens/order_detail_screen.dart';
 import 'package:ecommerce_mobile/utils/api_client_exception.dart';
@@ -19,11 +20,43 @@ class CartListScreen extends StatefulWidget {
 class _CartListScreenState extends State<CartListScreen> {
   late CartProvider _cartProvider;
   bool _checkoutBusy = false;
+  final TextEditingController _codeController = TextEditingController();
+  Map<String, dynamic>? _couponResult;
 
   @override
   void initState() {
     super.initState();
     _cartProvider = context.read<CartProvider>();
+    _cartProvider.addListener(_clearCouponResult);
+  }
+
+  @override
+  void dispose() {
+    _cartProvider.removeListener(_clearCouponResult);
+    _codeController.dispose();
+    super.dispose();
+  }
+
+  void _clearCouponResult() {
+    setState(() => _couponResult = null);
+  }
+
+  Future<void> _applyCoupon() async {
+    setState(() => _couponResult = null);
+    try {
+      final items = _cartProvider.cart.items
+          .map((e) => <String, dynamic>{
+            'productId': e.product.id,
+            'quantity': e.quantity,
+          }).toList();
+      final result = await context.read<CouponProvider>()
+          .apply(_codeController.text.trim(), items);
+      if (!mounted) return;
+      setState(() => _couponResult = result);
+    } on Exception catch (e) {
+      if (!mounted) return;
+      alertBox(context, 'Coupon', e.toString());
+    }
   }
 
   double _subtotal(CartProvider cart) {
@@ -107,16 +140,30 @@ class _CartListScreenState extends State<CartListScreen> {
   }
 
   Widget _buildFooter(CartProvider cartProvider) {
-    final total = _subtotal(cartProvider);
+    final total = _couponResult == null
+        ? _subtotal(cartProvider)
+        : (_couponResult!['originalAmount'] as num).toDouble();
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _codeController,
+                  decoration: const InputDecoration(labelText: 'Coupon code'),
+                ),
+              ),
+              ElevatedButton(onPressed: _applyCoupon, child: const Text('Primijeni')),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Estimated total', style: TextStyle(fontSize: 16)),
+              const Expanded(child: Text('Original amount', style: TextStyle(fontSize: 16))),
               Text(
                 '\$${total.toStringAsFixed(2)}',
                 style: const TextStyle(
@@ -126,6 +173,10 @@ class _CartListScreenState extends State<CartListScreen> {
               ),
             ],
           ),
+          if (_couponResult != null) ...[
+            Text('Discount amount: \$${(_couponResult!['discountAmount'] as num).toStringAsFixed(2)}'),
+            Text('Final amount: \$${(_couponResult!['finalAmount'] as num).toStringAsFixed(2)}'),
+          ],
           const SizedBox(height: 12),
           SizedBox(
             height: 48,
