@@ -34,9 +34,10 @@ namespace eCommerce.Services
              ?? throw new InvalidOperationException("User id claim is missing.");
 
 
-            if (request.Items == null || request.Items.Count == 0)
+            if (request.Items == null || request.Items.Count == 0 ||
+                request.Items.Any(i => i == null || i.ProductId <= 0 || i.Quantity <= 0))
             {
-                throw new ClinetException("Cart is empty.");
+                throw new ClinetException("Cart is empty or contains invalid items.");
             }
 
 
@@ -113,6 +114,9 @@ namespace eCommerce.Services
                 UsedAt = DateTime.UtcNow,
                 DiscountAmount = discountAmount
             };
+
+            _dbContext.CouponUsages.Add(newCouponUsage);
+            await _dbContext.SaveChangesAsync();
 
 
             // response -> 3 amount
