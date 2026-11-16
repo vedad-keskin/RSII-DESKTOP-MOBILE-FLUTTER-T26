@@ -13,7 +13,6 @@ namespace eCommerce.Services.Database
 
         [ForeignKey("CouponId")]
         public CouponIB180079 Coupon { get; set; } = null!;
-
         public int UserId { get; set; }
 
         [ForeignKey("UserId")]
@@ -21,7 +20,12 @@ namespace eCommerce.Services.Database
 
         public DateTime UsedAt { get; set; } = DateTime.UtcNow;
 
+        [Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal DiscountAmount { get; set; }
+
+
+
+
     }
-}
+} 

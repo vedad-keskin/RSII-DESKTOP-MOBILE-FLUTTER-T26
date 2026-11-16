@@ -57,6 +57,16 @@ TypeAdapterConfig<OrderItem, OrderItemResponse>.NewConfig()
     .Map(dest => dest.ProductName, src => src.Product != null ? src.Product.Name : string.Empty);
 
 
+TypeAdapterConfig<CouponIB180079, CouponResponse>.NewConfig()
+        .Map(dest => dest.UsageCount, src => src.CouponUsages.Count );
+
+
+
+
+
+
+
+
 // register application services
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<BaseProductState>();
@@ -86,6 +96,15 @@ builder.Services.AddScoped<IQueryOptimizationService, QueryOptimizationService> 
 
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductReviewService, ProductReviewService>();
+builder.Services.AddScoped<ICouponService, CouponService>();
+
+
+
+
+
+
+
+
 
 builder.Services.AddScoped<IValidator<ProductTypeInsertRequest>, ProductTypeInsertValidator>();
 builder.Services.AddScoped<IValidator<ProductTypeUpdateRequest>, ProductTypeUpdateValidator>();
@@ -99,6 +118,12 @@ builder.Services.AddScoped<IValidator<AssetInsertRequest>, AssetInsertValidator>
 builder.Services.AddScoped<IValidator<AssetUpdateRequest>, AssetUpdateValidator>();
 builder.Services.AddScoped<IValidator<ProductReviewInsertRequest>, ProductReviewInsertValidator>();
 builder.Services.AddScoped<IValidator<ProductReviewUpdateRequest>, ProductReviewUpdateValidator>();
+
+
+builder.Services.AddScoped<IValidator<CouponInsertRequest>, CouponInsertValidator>();
+builder.Services.AddScoped<IValidator<CouponUpdateRequest>, CouponUpdateValidator>();
+
+
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

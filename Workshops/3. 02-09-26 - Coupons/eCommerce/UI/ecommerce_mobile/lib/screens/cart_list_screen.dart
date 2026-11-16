@@ -1,5 +1,6 @@
 import 'package:ecommerce_mobile/providers/auth_provider.dart';
 import 'package:ecommerce_mobile/providers/cart_provider.dart';
+import 'package:ecommerce_mobile/providers/coupon_provider.dart';
 import 'package:ecommerce_mobile/providers/order_provider.dart';
 import 'package:ecommerce_mobile/screens/order_detail_screen.dart';
 import 'package:ecommerce_mobile/utils/api_client_exception.dart';
@@ -17,13 +18,24 @@ class CartListScreen extends StatefulWidget {
 }
 
 class _CartListScreenState extends State<CartListScreen> {
+
   late CartProvider _cartProvider;
+
   bool _checkoutBusy = false;
+
+  late CouponProvider _couponProvider;
+
+  Map<String, dynamic>? result;
+
+  final TextEditingController _codeController = TextEditingController();
+
+  
 
   @override
   void initState() {
     super.initState();
     _cartProvider = context.read<CartProvider>();
+    _couponProvider = context.read<CouponProvider>();
   }
 
   double _subtotal(CartProvider cart) {
@@ -35,6 +47,8 @@ class _CartListScreenState extends State<CartListScreen> {
   }
 
   Future<void> _checkout() async {
+
+    
     if (AuthProvider.accesstoken == null ||
         AuthProvider.accesstoken!.isEmpty) {
       alertBox(context, 'Login required', 'Please log in to place an order.');
@@ -116,7 +130,7 @@ class _CartListScreenState extends State<CartListScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Estimated total', style: TextStyle(fontSize: 16)),
+              const Text('Original Price:', style: TextStyle(fontSize: 16)),
               Text(
                 '\$${total.toStringAsFixed(2)}',
                 style: const TextStyle(
@@ -126,7 +140,92 @@ class _CartListScreenState extends State<CartListScreen> {
               ),
             ],
           ),
+
+  Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Discount Amount', style: TextStyle(fontSize: 16)),
+              Text(
+                '\$${result?['discountAmount'] ?? 0}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+
+
+  Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Final Amount', style: TextStyle(fontSize: 16)),
+              Text(
+                '\$${result?['finalAmount'] ?? 0}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+
           const SizedBox(height: 12),
+
+Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _codeController,
+                    decoration: InputDecoration(label: Text("Code")),
+
+
+// onChanged:(value) {
+  
+// initTable();
+
+// },
+
+
+
+                  ),
+                ),
+              ),
+              ElevatedButton(onPressed: () async{
+                   try {
+
+
+                      _applyCoupon();
+
+
+                        // var data = await _couponProvider.get(filter: {"code": _codeController.text});
+
+                        // setState(() {
+                        //   result = data;
+                        //   isLoading = false;
+                        // });
+                      } on Exception catch (e) {
+                        alertBox(context, 'Error', e.toString());
+                      }
+              }, child: Text("Primjeni")),
+           
+            ],
+          ),
+
+
+
+
+
+
+
+
+
+
+
+
+
           SizedBox(
             height: 48,
             child: FilledButton(
@@ -219,4 +318,95 @@ class _CartListScreenState extends State<CartListScreen> {
       ),
     );
   }
+
+
+
+Future<void> _applyCoupon() async {
+
+    
+    if (AuthProvider.accesstoken == null ||
+        AuthProvider.accesstoken!.isEmpty) {
+      alertBox(context, 'Login required', 'Please log in to apply a coupon.');
+      return;
+    }
+
+    if (_cartProvider.cart.items.isEmpty) {
+      return;
+    }
+
+    final invalid = _cartProvider.cart.items
+        .where((e) => e.product.id == null)
+        .toList();
+    if (invalid.isNotEmpty) {
+      alertBox(context, 'Cart error', 'Some items are missing a product id.');
+      return;
+    }
+
+    setState(() => _checkoutBusy = true);
+
+
+    try {
+
+
+
+      final payload = _cartProvider.cart.items
+          .map(
+            (e) => <String, dynamic>{
+              'productId': e.product.id,
+              'quantity': e.quantity,
+            },
+          )
+          .toList();
+
+      var code = _codeController.text;
+
+
+      result = await _couponProvider.apply(code, payload);
+
+      alertBox(context, "Informacija", "Kupon uspješno primjenjen, orginalna cijena: ${result?['originalAmount']} , discount: ${result?['discountAmount']}, , finalna cijena: ${result?['finalAmount']}");
+
+
+      _codeController.text = '';
+
+
+      // final order = await context.read<OrderProvider>().checkout(payload);
+
+      // _cartProvider.clearCart();
+
+
+
+
+
+
+
+
+
+
+      if (!mounted) return;
+      // await Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => OrderDetailScreen(orderId: order.id),
+      //   ),
+      // );
+    } on ApiClientException catch (e) {
+      if (mounted) {
+        alertBox(context, 'Coupon could not be applied', e.message);
+      }
+    } on Exception catch (e) {
+      if (mounted) {
+        alertBox(context, 'Coupon: ', e.toString());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _checkoutBusy = false);
+      }
+    }
+  }
+
+
+
+
+
+
 }

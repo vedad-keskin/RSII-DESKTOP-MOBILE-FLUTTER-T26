@@ -51,26 +51,6 @@ namespace eCommerce.Services.Database
                 .HasForeignKey(pr => pr.OrderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<CouponIB180079>()
-                .HasIndex(c => c.Code)
-                .IsUnique();
-
-            modelBuilder.Entity<CouponUsageIB180079>()
-                .HasIndex(u => new { u.CouponId, u.UserId })
-                .IsUnique();
-
-            modelBuilder.Entity<CouponUsageIB180079>()
-                .HasOne(u => u.Coupon)
-                .WithMany(c => c.Usages)
-                .HasForeignKey(u => u.CouponId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<CouponUsageIB180079>()
-                .HasOne(u => u.User)
-                .WithMany()
-                .HasForeignKey(u => u.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // Add any additional model configurations here
         }
     }

@@ -1,5 +1,6 @@
 import 'package:ecommerce_mobile/providers/auth_provider.dart';
 import 'package:ecommerce_mobile/screens/change_password_screen.dart';
+import 'package:ecommerce_mobile/screens/coupon_list_screen.dart';
 import 'package:ecommerce_mobile/screens/orders_list_screen.dart';
 import 'package:ecommerce_mobile/screens/profile_settings_screen.dart';
 import 'package:ecommerce_mobile/screens/user_review_screen.dart';
@@ -106,6 +107,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: ListView(
           shrinkWrap: true,
           children: [
+
+            ListTile(
+              leading: Icon(Icons.local_offer),
+              title: Text("Kuponi"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CouponListScreen(),
+                  ),
+                );
+              },
+            ),
+
             ListTile(
               leading: Icon(Icons.shopping_bag),
               title: Text("Your orders"),
