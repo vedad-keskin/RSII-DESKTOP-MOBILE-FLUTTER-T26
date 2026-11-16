@@ -1,5 +1,6 @@
 import 'package:ecommerce_mobile/providers/auth_provider.dart';
 import 'package:ecommerce_mobile/providers/cart_provider.dart';
+import 'package:ecommerce_mobile/providers/coupon_provider.dart';
 import 'package:ecommerce_mobile/providers/order_provider.dart';
 import 'package:ecommerce_mobile/screens/order_detail_screen.dart';
 import 'package:ecommerce_mobile/utils/api_client_exception.dart';
@@ -20,10 +21,19 @@ class _CartListScreenState extends State<CartListScreen> {
   late CartProvider _cartProvider;
   bool _checkoutBusy = false;
 
+  late CouponProvider _couponProvider;
+
+  Map<String, dynamic>? _couponResult;
+
+  final TextEditingController _codeController = TextEditingController();
+
+
+
   @override
   void initState() {
     super.initState();
     _cartProvider = context.read<CartProvider>();
+    _couponProvider = context.read<CouponProvider>();
   }
 
   double _subtotal(CartProvider cart) {
@@ -113,17 +123,78 @@ class _CartListScreenState extends State<CartListScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+
+
+
+
+
+Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _codeController,
+                    decoration: InputDecoration(label: Text("Code")),
+
+
+// onChanged:(value) {
+  
+// initTable();
+
+// },
+
+
+
+                  ),
+                ),
+              ),
+              ElevatedButton(onPressed: () async{
+                   try {
+
+                        _applyCoupon();
+
+
+                        // var code = _codeController.text;
+
+                        // var data = await _couponProvider.get(filter: {"code": _codeController.text});
+
+                        // setState(() {
+                        //   result = data;
+                        //   isLoading = false;
+                        // });
+                      } on Exception catch (e) {
+                        alertBox(context, 'Error', e.toString());
+                      }
+              }, child: Text("Primjeni")),
+         
+            ],
+          ),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Estimated total', style: TextStyle(fontSize: 16)),
-              Text(
-                '\$${total.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              if (_couponResult != null) ...[
+  Text("Originalna cijena: ${_couponResult?['originalAmount']}"),
+  Text("Popust: ${_couponResult?['discountAmount']}"),
+  Text("Nakon popusta: ${_couponResult?['finalAmount']}"),
+],
+
+
+
             ],
           ),
           const SizedBox(height: 12),
@@ -147,6 +218,79 @@ class _CartListScreenState extends State<CartListScreen> {
       ),
     );
   }
+
+
+  Future<void> _applyCoupon() async {
+    if (AuthProvider.accesstoken == null ||
+        AuthProvider.accesstoken!.isEmpty) {
+      alertBox(context, 'Login required', 'Please log in to place an order.');
+      return;
+    }
+
+    if (_cartProvider.cart.items.isEmpty) {
+      return;
+    }
+
+    final invalid = _cartProvider.cart.items
+        .where((e) => e.product.id == null)
+        .toList();
+    if (invalid.isNotEmpty) {
+      alertBox(context, 'Cart error', 'Some items are missing a product id.');
+      return;
+    }
+
+    // setState(() => _checkoutBusy = true);
+    try {
+      final payload = _cartProvider.cart.items
+          .map(
+            (e) => <String, dynamic>{
+              'productId': e.product.id,
+              'quantity': e.quantity,
+            },
+          )
+          .toList();
+
+      var code = _codeController.text;
+
+
+    _couponResult = await _couponProvider.apply(code, payload);
+
+
+alertBox(context, "Informacija", "Kod uspješno primjenjen, Originalna cijena: ${_couponResult?['originalAmount']}, Discount: ${_couponResult?['discountAmount']}, Final: ${_couponResult?['finalAmount']} ");
+
+
+    //   final order = await context.read<OrderProvider>().checkout(payload);
+
+
+
+
+
+
+      // _cartProvider.clearCart();
+
+      if (!mounted) return;
+
+      // await Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => OrderDetailScreen(orderId: order.id),
+      //   ),
+      // );
+    // } on ApiClientException catch (e) {
+    //   if (mounted) {
+    //     alertBox(context, 'Order could not be placed', e.message);
+    //   }
+    } on Exception catch (e) {
+      if (mounted) {
+        alertBox(context, 'Checkout', e.toString());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _checkoutBusy = false);
+      }
+    }
+  }
+
 
   Widget _buildItemList() {
     if (_cartProvider.cart.items.isEmpty) {

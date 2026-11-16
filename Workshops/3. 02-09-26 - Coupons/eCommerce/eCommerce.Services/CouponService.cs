@@ -114,6 +114,8 @@ namespace eCommerce.Services
                 DiscountAmount = discountAmount
             };
 
+            _dbContext.CouponUsages.Add(newCouponUsage);
+            await _dbContext.SaveChangesAsync();
 
             // response -> 3 amount
 
